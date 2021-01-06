@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.brad.web.webspringboot.oaSystem.mapper.NewsEntityMapper" >
+
+  <!--查询院内新闻表-->
+  <select id="getNewsEntityList" resultType="com.brad.web.webspringboot.oaSystem.bean.NewsBean" parameterType="com.brad.web.webspringboot.oaSystem.bean.NewsBean"  >
+    SELECT
+      ohn.id AS id,
+      ohn.news_category AS newsCategory,
+      ohn.news_content_title AS newsContentTitle,
+      ohn.news_display_status AS newsDisplayStatus,
+      ohn.news_recommended_type AS newsRecommendedType,
+      ohn.news_cover_photo_url AS newsCoverPhotoUrl,
+      ohn.news_number_visits AS newsNumberVisits,
+      ohn.news_release_time AS newsReleaseTime,
+      ohn.create_time AS createTime,
+      ohn.news_content_description AS newsContentDescription,
+    ohn.news_recommended_image_type AS newsRecommendedImageType
+
+    FROM
+      oa_hospital_news ohn
+
+    <where>
+      <if test="newsBean.id != null and newsBean.id !='' ">
+        and ohn.id=#{newsBean.id,jdbcType=VARCHAR}
+      </if>
+<!--      <if test="newsBean.checkId != null and checkId !=''">-->
+<!--        and ohn.id !=#{newsBean.checkId,jdbcType=VARCHAR}-->
+<!--      </if>-->
+      <if test="newsBean.newsCategory != null and newsBean.newsCategory !=''">
+        and ohn.news_category=#{newsBean.newsCategory,jdbcType=VARCHAR}
+      </if>
+      <if test="newsBean.newsContentTitle != null and newsBean.newsContentTitle !=''">
+        and ohn.news_content_title like concat("%",#{newsBean.newsContentTitle,jdbcType=VARCHAR} ,"%")
+      </if>
+      <if test="newsBean.newsDisplayStatus != null and newsBean.newsDisplayStatus !=''">
+        and ohn.news_display_status=#{newsBean.newsDisplayStatus,jdbcType=VARCHAR}
+      </if>
+      <if test="newsBean.newsRecommendedType != null and newsBean.newsRecommendedType !=''">
+        and ohn.news_recommended_type=#{newsBean.newsRecommendedType,jdbcType=VARCHAR}
+      </if>
+      <if test="newsBean.newsReleaseTime != null and newsBean.newsReleaseTime !=''">
+        and ohn.news_release_time=#{newsBean.newsReleaseTime,jdbcType=VARCHAR}
+      </if>
+      <if test="newsBean.newsRecommendedImageType != null and newsBean.newsRecommendedImageType !=''">
+        and ohn.news_recommended_image_type=#{newsBean.newsRecommendedImageType,jdbcType=VARCHAR}
+      </if>
+
+    </where>
+  </select>
+
+
+  <!--查询院内新闻表(列表，可根据id或其他条件查询详情)-->
+  <select id="getNewsEntityByList" resultType="com.brad.web.webspringboot.oaSystem.bean.NewsBean" parameterType="com.brad.web.webspringboot.oaSystem.bean.NewsBean"  >
+    SELECT
+    ohn.id AS id,
+    ohn.news_category AS newsCategory,
+    ohn.news_content_title AS newsContentTitle,
+    ohn.news_display_status AS newsDisplayStatus,
+    ohn.news_recommended_type AS newsRecommendedType,
+    ohn.news_cover_photo_url AS newsCoverPhotoUrl,
+    ohn.news_number_visits AS newsNumberVisits,
+    ohn.news_release_time AS newsReleaseTime,
+    ohn.create_time AS createTime,
+    ohn.news_content_description AS newsContentDescription,
+    ohn.news_recommended_image_type AS newsRecommendedImageType
+
+    FROM
+    oa_hospital_news ohn
+    <where>
+      <if test="newsBean.id != null and newsBean.id !='' ">
+        and ohn.id=#{newsBean.id,jdbcType=VARCHAR}
+      </if>
+      <!--      <if test="newsBean.checkId != null and checkId !=''">-->
+      <!--        and ohn.id !=#{newsBean.checkId,jdbcType=VARCHAR}-->
+      <!--      </if>-->
+      <if test="newsBean.newsCategory != null and newsBean.newsCategory !=''">
+        and ohn.news_category=#{newsBean.newsCategory,jdbcType=VARCHAR}
+      </if>
+      <if test="newsBean.newsContentTitle != null and newsBean.newsContentTitle !=''">
+        and ohn.news_content_title like concat("%",#{newsBean.newsContentTitle,jdbcType=VARCHAR} ,"%")
+      </if>
+      <if test="newsBean.newsDisplayStatus != null and newsBean.newsDisplayStatus !=''">
+        and ohn.news_display_status=#{newsBean.newsDisplayStatus,jdbcType=VARCHAR}
+      </if>
+      <if test="newsBean.newsRecommendedType != null and newsBean.newsRecommendedType !=''">
+        and ohn.news_recommended_type=#{newsBean.newsRecommendedType,jdbcType=VARCHAR}
+      </if>
+      <if test="newsBean.newsReleaseTime != null and newsBean.newsReleaseTime !=''">
+        and ohn.news_release_time=#{newsBean.newsReleaseTime,jdbcType=VARCHAR}
+      </if>
+      <if test="newsBean.newsRecommendedImageType != null and newsBean.newsRecommendedImageType !=''">
+        and ohn.news_recommended_image_type=#{newsBean.newsRecommendedImageType,jdbcType=VARCHAR}
+      </if>
+
+    </where>
+    order by ohn.create_time desc
+  </select>
+
+
+  <!-- 查总数（分页）-->
+  <select id="countNewsEntityDetail" parameterType="com.brad.web.webspringboot.oaSystem.bean.NewsBean" resultType="long">
+    SELECT
+    count(ohn.id)
+    FROM
+    oa_hospital_news ohn
+    <where>
+      <if test="newsBean.id != null and newsBean.id !='' ">
+        and ohn.id=#{newsBean.id,jdbcType=VARCHAR}
+      </if>
+<!--      <if test="newsBean.checkId != null and checkId !=''">-->
+<!--        and ohn.id !=#{newsBean.checkId,jdbcType=VARCHAR}-->
+<!--      </if>-->
+      <if test="newsBean.newsCategory != null and newsBean.newsCategory !=''">
+        and ohn.news_category=#{newsBean.newsCategory,jdbcType=VARCHAR}
+      </if>
+      <if test="newsBean.newsContentTitle != null and newsBean.newsContentTitle !=''">
+        and ohn.news_content_title like concat("%",#{newsBean.newsContentTitle,jdbcType=VARCHAR} ,"%")
+      </if>
+      <if test="newsBean.newsDisplayStatus != null and newsBean.newsDisplayStatus !=''">
+        and ohn.news_display_status=#{newsBean.newsDisplayStatus,jdbcType=VARCHAR}
+      </if>
+      <if test="newsBean.newsRecommendedType != null and newsBean.newsRecommendedType !=''">
+        and ohn.news_recommended_type=#{newsBean.newsRecommendedType,jdbcType=VARCHAR}
+      </if>
+      <if test="newsBean.newsReleaseTime != null and newsBean.newsReleaseTime !=''">
+        and ohn.news_release_time=#{newsBean.newsReleaseTime,jdbcType=VARCHAR}
+      </if>
+
+      <if test="newsBean.newsRecommendedImageType != null and newsBean.newsRecommendedImageType !=''">
+        and ohn.news_recommended_image_type=#{newsBean.newsRecommendedImageType,jdbcType=VARCHAR}
+      </if>
+
+    </where>
+    order by ohn.create_time desc
+  </select>
+
+<!--  &lt;!&ndash;查询院内新闻（AO门户信息公共区域）查询置顶 &ndash;&gt;-->
+<!--  <select id="getNewsEntityOACommonList" resultType="com.xueguang.oa.hospital.oaportalservices.bean.NewsBean"   parameterType="map"  >-->
+<!--    SELECT-->
+<!--      ohn.id AS id,-->
+<!--      ohn.news_category AS newsCategory,-->
+<!--      ohn.news_content_title AS newsContentTitle,-->
+<!--      ohn.news_display_status AS newsDisplayStatus,-->
+<!--      ohn.news_recommended_type AS newsRecommendedType,-->
+<!--      ohn.news_cover_photo_url AS newsCoverPhotoUrl,-->
+<!--      ohn.news_number_visits AS newsNumberVisits,-->
+<!--      ohn.news_release_time AS newsReleaseTime,-->
+<!--      ohn.create_time AS createTime,-->
+<!--      ohn.news_content_description AS newsContentDescription,-->
+<!--    ohn.news_recommended_image_type AS newsRecommendedImageType-->
+<!--    FROM-->
+<!--     oa_hospital_news ohn-->
+<!--    <where>-->
+<!--      ohn.news_display_status = '1'-->
+<!--      <if test="id != null and id !='' ">-->
+<!--        and ohn.id=#{id,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="checkId != null and checkId !=''">-->
+<!--        and ohn.id !=#{checkId,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="newsCategory != null and newsCategory !=''">-->
+<!--        and ohn.news_category=#{newsCategory,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="newsContentTitle != null and newsContentTitle !=''">-->
+<!--        and ohn.news_content_title like concat("%",#{newsContentTitle,jdbcType=VARCHAR} ,"%")-->
+<!--      </if>-->
+<!--      <if test="newsRecommendedType != null and newsRecommendedType !=''">-->
+<!--        and ohn.news_recommended_type=#{newsRecommendedType,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="newsReleaseTime != null and newsReleaseTime !=''">-->
+<!--        and ohn.news_release_time=#{newsReleaseTime,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="newsRecommendedImageType != null and newsRecommendedImageType !=''">-->
+<!--        and ohn.news_recommended_image_type=#{newsRecommendedImageType,jdbcType=VARCHAR}-->
+<!--      </if>-->
+
+
+<!--    </where>-->
+
+<!--    ORDER BY-->
+<!--    ohn.news_recommended_type DESC-->
+<!--  </select>-->
+
+
+
+<!--  &lt;!&ndash;查询院内新闻（AO门户信息公共区域）查询图片新闻 &ndash;&gt;-->
+<!--  <select id="getNewsEntityOACommonNewsRecommendedImageTypeList" resultType="com.xueguang.oa.hospital.oaportalservices.bean.NewsBean"   parameterType="map"  >-->
+<!--    SELECT-->
+<!--    ohn.id AS id,-->
+<!--    ohn.news_category AS newsCategory,-->
+<!--    ohn.news_content_title AS newsContentTitle,-->
+<!--    ohn.news_display_status AS newsDisplayStatus,-->
+<!--    ohn.news_recommended_type AS newsRecommendedType,-->
+<!--    ohn.news_cover_photo_url AS newsCoverPhotoUrl,-->
+<!--    ohn.news_number_visits AS newsNumberVisits,-->
+<!--    ohn.news_release_time AS newsReleaseTime,-->
+<!--    ohn.create_time AS createTime,-->
+<!--    ohn.news_content_description AS newsContentDescription,-->
+<!--    ohn.news_recommended_image_type AS newsRecommendedImageType-->
+<!--    FROM-->
+<!--    oa_hospital_news ohn-->
+<!--    <where>-->
+<!--      ohn.news_display_status = '1'-->
+<!--      and ohn.news_recommended_image_type = '1'-->
+<!--      <if test="id != null and id !='' ">-->
+<!--        and ohn.id=#{id,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="checkId != null and checkId !=''">-->
+<!--        and ohn.id !=#{checkId,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="newsCategory != null and newsCategory !=''">-->
+<!--        and ohn.news_category=#{newsCategory,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="newsContentTitle != null and newsContentTitle !=''">-->
+<!--        and ohn.news_content_title like concat("%",#{newsContentTitle,jdbcType=VARCHAR} ,"%")-->
+<!--      </if>-->
+<!--      <if test="newsRecommendedType != null and newsRecommendedType !=''">-->
+<!--        and ohn.news_recommended_type=#{newsRecommendedType,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="newsReleaseTime != null and newsReleaseTime !=''">-->
+<!--        and ohn.news_release_time=#{newsReleaseTime,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="newsRecommendedImageType != null and newsRecommendedImageType !=''">-->
+<!--        and ohn.news_recommended_image_type=#{newsRecommendedImageType,jdbcType=VARCHAR}-->
+<!--      </if>-->
+
+<!--    </where>-->
+<!--    ORDER BY-->
+<!--    ohn.news_recommended_image_type DESC-->
+<!--  </select>-->
+
+
+<!--  &lt;!&ndash; 查询院内新闻（AO门户信息公共区域） 总数（分页）&ndash;&gt;-->
+<!--  <select id="getOACommonCount" parameterType="map" resultType="integer">-->
+<!--    SELECT-->
+<!--    count(ohn.id)-->
+<!--    FROM-->
+<!--    oa_hospital_news ohn-->
+<!--    <where>-->
+<!--      ohn.news_display_status = '1'-->
+<!--      <if test="id != null and id !='' ">-->
+<!--        and ohn.id=#{id,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="checkId != null and checkId !=''">-->
+<!--        and ohn.id !=#{checkId,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="newsCategory != null and newsCategory !=''">-->
+<!--        and ohn.news_category=#{newsCategory,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="newsContentTitle != null and newsContentTitle !=''">-->
+<!--        and ohn.news_content_title like concat("%",#{newsContentTitle,jdbcType=VARCHAR} ,"%")-->
+<!--      </if>-->
+<!--      <if test="newsRecommendedType != null and newsRecommendedType !=''">-->
+<!--        and ohn.news_recommended_type=#{newsRecommendedType,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="newsReleaseTime != null and newsReleaseTime !=''">-->
+<!--        and ohn.news_release_time=#{newsReleaseTime,jdbcType=VARCHAR}-->
+<!--      </if>-->
+
+<!--      <if test="newsRecommendedImageType != null and newsRecommendedImageType !=''">-->
+<!--        and ohn.news_recommended_image_type=#{newsRecommendedImageType,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--    </where>-->
+
+<!--    ORDER BY-->
+<!--    ohn.news_recommended_type DESC-->
+<!--  </select>-->
+
+
+
+
+<!--  <delete id="deleteNewsEntity" parameterType="java.lang.String" >-->
+<!--    delete from oa_hospital_news-->
+<!--    where id = #{id,jdbcType=VARCHAR}-->
+<!--  </delete>-->
+
+<!--  <insert id="createNewsEntity" parameterType="com.xueguang.oa.hospital.oaportalservices.entity.NewsEntity" >-->
+<!--    insert into oa_hospital_news (id, news_category, news_content_title, -->
+<!--      news_display_status, news_recommended_type, -->
+<!--      news_cover_photo_url, news_number_visits, news_release_time, -->
+<!--      create_time, news_content_description,news_recommended_image_type)-->
+<!--    values (#{id,jdbcType=VARCHAR}, #{newsCategory,jdbcType=VARCHAR}, #{newsContentTitle,jdbcType=VARCHAR}, -->
+<!--      #{newsDisplayStatus,jdbcType=VARCHAR}, #{newsRecommendedType,jdbcType=VARCHAR}, -->
+<!--      #{newsCoverPhotoUrl,jdbcType=VARCHAR}, #{newsNumberVisits,jdbcType=INTEGER}, #{newsReleaseTime,jdbcType=VARCHAR},-->
+<!--     now(), #{newsContentDescription,jdbcType=LONGVARCHAR}, #{newsRecommendedImageType,jdbcType=VARCHAR})-->
+<!--  </insert>-->
+
+
+<!--  <update id="updateNewsEntity" parameterType="com.xueguang.oa.hospital.oaportalservices.entity.NewsEntity" >-->
+<!--    update oa_hospital_news-->
+<!--    <set >-->
+<!--      <if test="newsCategory != null" >-->
+<!--        news_category = #{newsCategory,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="newsContentTitle != null" >-->
+<!--        news_content_title = #{newsContentTitle,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="newsDisplayStatus != null" >-->
+<!--        news_display_status = #{newsDisplayStatus,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="newsRecommendedType != null" >-->
+<!--        news_recommended_type = #{newsRecommendedType,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="newsCoverPhotoUrl != null" >-->
+<!--        news_cover_photo_url = #{newsCoverPhotoUrl,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="newsNumberVisits != null" >-->
+<!--        news_number_visits = #{newsNumberVisits,jdbcType=INTEGER},-->
+<!--      </if>-->
+<!--      <if test="newsReleaseTime != null" >-->
+<!--        news_release_time = #{newsReleaseTime,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="createTime != null" >-->
+<!--        create_time = #{createTime,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="newsContentDescription != null" >-->
+<!--        news_content_description = #{newsContentDescription,jdbcType=LONGVARCHAR},-->
+<!--      </if>-->
+<!--      <if test="newsRecommendedImageType != null" >-->
+<!--        news_recommended_image_type = #{newsRecommendedImageType,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--    </set>-->
+<!--    where id = #{id,jdbcType=VARCHAR}-->
+<!--  </update>-->
+
+
+</mapper>

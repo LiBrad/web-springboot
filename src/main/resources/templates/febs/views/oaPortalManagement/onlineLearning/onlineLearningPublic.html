@@ -1,0 +1,199 @@
+<style>
+    /*#febs-onlineLearning xm-select {*/
+    /*    min-height: 30px;*/
+    /*    line-height: 30px;*/
+    /*}*/
+    /*#febs-onlineLearning xm-select > .xm-label .scroll .label-content {*/
+    /*    display: flex;*/
+    /*    padding: 0 30px 0 10px;*/
+    /*}*/
+</style>
+<div class="layui-fluid layui-anim febs-anim" id="febs-onlineLearning" lay-title="学习中心管理">
+    <div class="layui-row febs-container">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body febs-table-full">
+                    <form class="layui-form layui-table-form" lay-filter="user-table-form">
+                        <div class="layui-row">
+                            <div class="layui-col-md10">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">标题:</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text"   placeholder="请输入标题" id="olTitle" name="olTitle"  autocomplete="off"  class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">资料类型</label>
+                                        <div class="layui-input-inline">
+                                            <select id="technicalInformationTypeId" name="technicalInformationTypeId" lay-verify="required|technicalInformationTypeId" style="height: 38px;border-color: #F0F0F0;" lay-search>
+                                                <option value=""></option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="layui-col-md2 layui-col-sm12 layui-col-xs12 table-action-area">
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-blue-plain table-action" id="query">
+                                    <i class="layui-icon">&#xe848;</i>
+                                </div>
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-green-plain table-action" id="reset">
+                                    <i class="layui-icon">&#xe79b;</i>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <table lay-filter="onlineLearningTable" lay-data="{id: 'onlineLearningTable'}"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<script type="text/html" id="user-status">-->
+<!--    {{#-->
+<!--    let status = {-->
+<!--    1: {title: '有效', color: 'green'},-->
+<!--    0: {title: '禁用', color: 'volcano'}-->
+<!--    }[d.status];-->
+<!--    }}-->
+<!--    <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>-->
+<!--</script>-->
+<!--<script type="text/html" id="user-sex">-->
+<!--    {{#-->
+<!--    let sex = {-->
+<!--    2: {title: '保密'},-->
+<!--    1: {title: '女'},-->
+<!--    0: {title: '男'}-->
+<!--    }[d.sex];-->
+<!--    }}-->
+<!--    <span>{{ sex.title }}</span>-->
+<!--</script>-->
+<script type="text/html" id="user-option">
+    <span shiro:lacksPermission="onlineLearningPublic:see">
+        <span class="layui-badge-dot febs-bg-orange"></span> 无权限
+    </span>
+    <a lay-event="detail" shiro:hasPermission="onlineLearningPublic:see"><i
+            class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>
+<!--    <a lay-event="edit" shiro:hasPermission="onlineLearning:update"><i-->
+<!--            class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>-->
+<!--    <a lay-event="del" shiro:hasPermission="onlineLearning:delete"><i class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>-->
+</script>
+<script data-th-inline="none" type="text/javascript">
+    layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs'], function () {
+        let $ = layui.jquery,
+            laydate = layui.laydate,
+            febs = layui.febs,
+            form = layui.form,
+            table = layui.table,
+            dropdown = layui.dropdown,
+            $view = $('#febs-onlineLearning'),
+            $query = $view.find('#query'),
+            $reset = $view.find('#reset'),
+            $searchForm = $view.find('form'),
+            sortObject = {field: 'createTime', type: null},
+            tableIns;
+
+        form.render();
+
+        initTable();
+
+        laydate.render({
+            elem: '#user-createTime',
+            range: true,
+            trigger: 'click'
+        });
+        technicalInformationTypeIdSelect();
+        function technicalInformationTypeIdSelect(){
+            //技术资料类型下拉
+            $.ajax({
+                url:  ctx + 'sysDictionaryController/getSysDictionaryList?type=technical_information_type' , //上传接口
+                success: function(res) {
+
+                    //解决 Unexpected token o in JSON at position 1问题
+                    var dataObj = typeof res == 'string'?JSON.parse(res):res;
+
+                    // var dataObj = JSON.parse(res);
+                    // console.log(dataObj)
+                    if (dataObj != null && dataObj.dataSource.list.length > 0) {
+                        var groupOption;
+                        for (var i = 0; i < dataObj.dataSource.list.length; i++) {
+                            groupOption = groupOption + '<option value="' + dataObj.dataSource.list[i].id + '">' + dataObj.dataSource
+                                .list[i].name + '</option>';
+                        }
+                        $("#technicalInformationTypeId").append(groupOption);
+                        form.render('select'); //一定要加form.render();
+                        // BindStrainDropList();
+                    }
+                }
+            });
+        }
+
+
+
+        table.on('tool(onlineLearningTable)', function (obj) {
+            let data = obj.data,
+                layEvent = obj.event;
+            if (layEvent === 'detail') {
+                febs.modal.view('文章详情', 'oaPortalManagement/onlineLearningPublic/see/' + data.id, {
+                    area: $(window).width() <= 750 ? '95%' : ['1100px', '750px']
+                });
+            }
+        });
+
+        table.on('sort(onlineLearningTable)', function (obj) {
+            sortObject = obj;
+            tableIns.reload({
+                initSort: obj,
+                where: $.extend(getQueryParams(), {
+                    field: obj.field,
+                    order: obj.type
+                })
+            });
+        });
+
+        $query.on('click', function () {
+            let params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+            tableIns.reload({where: params, page: {curr: 1}});
+        });
+
+        $reset.on('click', function () {
+            $searchForm[0].reset();
+            // sortObject.type = 'null';
+            // deptXmlSelect.setValue(['']);
+            // createTimeTo = null;
+            // createTimeFrom = null;
+            tableIns.reload({where: getQueryParams(true), page: {curr: 1}});
+        });
+
+
+
+
+        function initTable() {
+            tableIns = febs.table.init({
+                elem: $view.find('table'),
+                id: 'onlineLearningTable',
+                url: ctx + 'onlineLearning/list',
+                cols: [[
+                    {
+                        type: 'numbers',
+                        width: '4%'
+                    },
+                    {type: 'checkbox'},
+                    {field: 'olTitle', title: '标题', minWidth: 100},
+                    {field: 'olReleaseTime', title: '发布时间'},
+                    {field: 'technicalInformationTypeName', title: '技术资料类型'},
+                    {field: 'olUserName', title: '发布人'},
+
+                    {title: '操作', toolbar: '#user-option', minWidth: 140}
+                ]]
+            });
+        }
+
+        function getQueryParams(flag) {
+            let params = $searchForm.serializeJson();
+            return params;
+        }
+
+    })
+</script>

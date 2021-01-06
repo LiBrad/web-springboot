@@ -1,0 +1,376 @@
+<style>
+    /*#febs-personnelFiles xm-select {*/
+    /*    min-height: 30px;*/
+    /*    line-height: 30px;*/
+    /*}*/
+    /*#febs-personnelFiles xm-select > .xm-label .scroll .label-content {*/
+    /*    display: flex;*/
+    /*    padding: 0 30px 0 10px;*/
+    /*}*/
+</style>
+<div class="layui-fluid layui-anim febs-anim" id="febs-personnelFiles" lay-title="人事档案管理">
+    <div class="layui-row febs-container">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body febs-table-full">
+                    <form class="layui-form layui-table-form" lay-filter="user-table-form">
+                        <div class="layui-row">
+                            <div class="layui-col-md10">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">姓名:</label>
+                                        <div class="layui-input-inline">
+                                            <input class="layui-input"  placeholder="请输入姓名" id="personnelFilesName" name="personnelFilesName" autocomplete="off"  >
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">身份证号:</label>
+                                        <div class="layui-input-inline">
+                                            <input class="layui-input"  placeholder="请输入身份证号" oninput="value=value.replace(/[^\d]/g,'')"  id="personnelFilesIdCard" name="personnelFilesIdCard" autocomplete="off"  >
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">所属部门</label>
+                                        <div class="layui-input-inline" id="dept">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">第一学历</label>
+                                        <div class="layui-input-inline">
+                                            <select id="personnelFilesFirstDegree" name="personnelFilesFirstDegree" lay-verify="required|personnelFilesFirstDegree" style="height: 38px;border-color: #F0F0F0;" lay-search>
+                                                <option value=""></option>
+
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="layui-col-md2 layui-col-sm12 layui-col-xs12 table-action-area">
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-blue-plain table-action" id="query">
+                                    <i class="layui-icon">&#xe848;</i>
+                                </div>
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-green-plain table-action" id="reset">
+                                    <i class="layui-icon">&#xe79b;</i>
+                                </div>
+                                <div class="layui-btn layui-btn-sm layui-btn-primary table-action action-more"
+                                     shiro:hasAnyPermissions="personnelFiles:add,personnelFiles:update,personnelFiles:export">
+                                    <i class="layui-icon">&#xe875;</i>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <table lay-filter="personnelFilesTable" lay-data="{id: 'personnelFilesTable'}"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<script type="text/html" id="user-status">-->
+<!--    {{#-->
+<!--    let status = {-->
+<!--    1: {title: '有效', color: 'green'},-->
+<!--    0: {title: '禁用', color: 'volcano'}-->
+<!--    }[d.status];-->
+<!--    }}-->
+<!--    <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>-->
+<!--</script>-->
+<!--<script type="text/html" id="user-sex">-->
+<!--    {{#-->
+<!--    let sex = {-->
+<!--    2: {title: '保密'},-->
+<!--    1: {title: '女'},-->
+<!--    0: {title: '男'}-->
+<!--    }[d.sex];-->
+<!--    }}-->
+<!--    <span>{{ sex.title }}</span>-->
+<!--</script>-->
+<script type="text/html" id="personnelFiles-option">
+    <span shiro:lacksPermission="personnelFiles:update,personnelFiles:delete,personnelFiles:print">
+        <span class="layui-badge-dot febs-bg-orange"></span> 无权限
+    </span>
+<!--    <a lay-event="detail" shiro:hasPermission="user:view"><i-->
+<!--            class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>-->
+    <a lay-event="print" shiro:hasPermission="personnelFiles:print"><i class="layui-icon febs-edit-area">&#xe825;</i></a>
+
+    <a lay-event="edit" shiro:hasPermission="personnelFiles:update"><i
+            class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>
+    <a lay-event="del" shiro:hasPermission="personnelFiles:delete"><i class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>
+
+</script>
+<script data-th-inline="none" type="text/javascript">
+    layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs', 'xmSelect'], function () {
+        let $ = layui.jquery,
+            laydate = layui.laydate,
+            febs = layui.febs,
+            form = layui.form,
+            table = layui.table,
+            dropdown = layui.dropdown,
+            $view = $('#febs-personnelFiles'),
+            $query = $view.find('#query'),
+            $reset = $view.find('#reset'),
+            $searchForm = $view.find('form'),
+            sortObject = {field: 'createTime', type: null},
+            tableIns,
+            deptXmlSelect;
+
+        form.render();
+
+        personnelFilesFirstDegreeSelect();
+        function personnelFilesFirstDegreeSelect(){
+            //学历下拉
+            $.ajax({
+                url:  ctx + 'sysDictionaryController/getSysDictionaryList?type=degree_type' ,
+
+                success: function(res) {
+
+                    //解决 Unexpected token o in JSON at position 1问题
+                    var dataObj = typeof res == 'string'?JSON.parse(res):res;
+
+                    // var dataObj = JSON.parse(res);
+                    // console.log(dataObj)
+                    if (dataObj != null && dataObj.dataSource.list.length > 0) {
+                        var groupOption;
+                        for (var i = 0; i < dataObj.dataSource.list.length; i++) {
+                            groupOption = groupOption + '<option value="' + dataObj.dataSource.list[i].id + '">' + dataObj.dataSource
+                                .list[i].name + '</option>';
+                        }
+                        $("#personnelFilesFirstDegree").append(groupOption);
+                        form.render('select'); //一定要加form.render();
+                        // BindStrainDropList();
+                    }
+                }
+            });
+        }
+        // DepartmentEntity();
+        // function DepartmentEntity(){
+        //     //科室下拉
+        //     $.ajax({
+        //
+        //         url: commonIP + '/api/system/departmentEntityController/getDepartmentEntityList?authToken=' + authToken + '&page=0&limit=0',
+        //         parseData: function(res) { //res 即为原始返回的数据
+        //             return {
+        //                 "code": res.code, //解析接口状态
+        //                 "msg": res.msg, //解析提示文本
+        //                 "count": res.count, //解析数据长度
+        //                 "data": res.dataSource.list //解析数据列表
+        //             };
+        //         },
+        //         async: false,
+        //         success: function(res) {
+        //             // var dataObj = JSON.parse(res);
+        //             //解决 Unexpected token o in JSON at position 1问题
+        //             var dataObj = typeof res == 'string'?JSON.parse(res):res;
+        //             if(dataObj != null && dataObj.dataSource.list.length > 0) {
+        //                 var farmOption='<option value="" ></option>';
+        //                 for(var i = 0; i < dataObj.dataSource.list.length; i++) {
+        //                     farmOption = farmOption + '<option value="' + dataObj.dataSource.list[i].id + '">' + dataObj.dataSource.list[i].departmentName + '</option>';
+        //                 }
+        //                 $("#personnelFilesDepartmentId").append(farmOption);
+        //                 form.render('select'); //一定要加form.render();
+        //             }
+        //         }
+        //     });
+        // }
+
+
+        initTable();
+
+        laydate.render({
+            elem: '#user-createTime',
+            range: true,
+            trigger: 'click'
+        });
+
+        deptXmlSelect = xmSelect.render({
+            el: '#dept',
+            filterable: true,
+            model: {label: {type: 'text'}},
+            tree: {
+                show: true,
+                strict: false,
+                showLine: false,
+                clickCheck: true,
+                expandedKeys: [-1],
+            },
+            name: 'deptId',
+            theme: {
+                color: '#52c41a',
+            },
+            prop: {
+                value: 'id'
+            },
+            height: 'auto',
+            on: function(data){
+                if(data.isAdd){
+                    return data.change.slice(0, 1)
+                }
+            }
+        });
+
+        febs.get(ctx + 'dept/select/tree', null, function (data) {
+            deptXmlSelect.update(
+                data
+            )
+        });
+
+        dropdown.render({
+            elem: $view.find('.action-more'),
+            click: function (name, elem, event) {
+                let checkStatus = table.checkStatus('personnelFilesTable');
+                if (name === 'add') {
+                    febs.modal.open('新增人事档案', 'oaPortalManagement/personnelFiles/add', {
+                        btn: ['提交', '取消'],
+                        // area: $(window).width() <= 750 ? '95%' : '50%',
+                        area: $(window).width() <= 750 ? '95%' :['1100px', '750px'] ,
+
+                        yes: function (index, layero) {
+                            $('#personnelFiles-add').find('#submit').trigger('click');
+                        },
+                        btn2: function () {
+                            layer.closeAll();
+                        }
+                    });
+                }
+                if (name === 'delete') {
+                    if (!checkStatus.data.length) {
+                        febs.alert.warn('请选择需要删除的人事档案');
+                    } else {
+                        febs.modal.confirm('删除人事档案', '确定删除人事档案？', function () {
+                            let idS = [];
+                            layui.each(checkStatus.data, function (key, item) {
+                                idS.push(item.id)
+                            });
+                            deleteUsers(idS.join(','));
+                        });
+                    }
+                }
+                if (name === 'export') {
+                    let params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+                    params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
+                    params.pageNum = $view.find(".layui-laypage-em").next().html();
+                    febs.download(ctx + 'personnelFiles/excel', params, '人事档案.xlsx');
+                }
+            },
+            options: [{
+                name: 'add',
+                title: '新增人事档案',
+                perms: 'personnelFiles:add'
+            }, {
+                name: 'delete',
+                title: '删除人事档案',
+                perms: 'personnelFiles:delete'
+            }, {
+                name: 'export',
+                title: '导出Excel',
+                perms: 'personnelFiles:export'
+            }]
+        });
+
+
+        table.on('tool(personnelFilesTable)', function (obj) {
+            let data = obj.data,
+                layEvent = obj.event;
+            if (layEvent === 'del') {
+                febs.modal.confirm('删除人事档案', '确定删除该人事档案？', function () {
+                    deleteUsers(data.id);
+                });
+            }
+            if (layEvent === 'edit') {
+                febs.modal.open('修改人事档案', 'oaPortalManagement/personnelFiles/update/' + data.id, {
+                    area: $(window).width() <= 750 ? '100%' : ['1100px', '750px'],
+                    btn: ['提交', '取消'],
+                    yes: function (index, layero) {
+                        $('#personnelFiles-update').find('#submit').trigger('click');
+                    },
+                    btn2: function () {
+                        layer.closeAll();
+                    }
+                });
+            }
+            if (layEvent === 'print') {
+                febs.modal.open('打印人事档案', 'oaPortalManagement/personnelFiles/print/' + data.id, {
+                    area: $(window).width() <= 750 ? '100%' : ['1500px', '750px'],
+                    btn: ['确认打印', '取消'],
+                    yes: function (index, layero) {
+                        $('#personnelFiles-print').find('#submit').trigger('click');
+                    },
+                    btn2: function () {
+                        layer.closeAll();
+                    }
+                });
+            }
+
+
+
+        });
+
+        table.on('sort(personnelFilesTable)', function (obj) {
+            sortObject = obj;
+            tableIns.reload({
+                initSort: obj,
+                where: $.extend(getQueryParams(), {
+                    field: obj.field,
+                    order: obj.type
+                })
+            });
+        });
+
+        $query.on('click', function () {
+            let params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+            tableIns.reload({where: params, page: {curr: 1}});
+        });
+
+        $reset.on('click', function () {
+            $searchForm[0].reset();
+            // sortObject.type = 'null';
+            deptXmlSelect.setValue(['']);
+            // createTimeTo = null;
+            // createTimeFrom = null;
+            tableIns.reload({where: getQueryParams(true), page: {curr: 1}});
+        });
+
+
+        function initTable() {
+            tableIns = febs.table.init({
+                elem: $view.find('table'),
+                id: 'personnelFilesTable',
+                url: ctx + 'personnelFiles/list',
+                cols: [[
+                    {
+                        type: 'numbers',
+                        width: '4%'
+                    },
+                    {type: 'checkbox'},
+                    {field: 'personnelFilesName', title: '姓名', minWidth: 100},
+                    {field: 'personnelFilesGenderName', title: '性别', minWidth: 100},
+                    {field: 'personnelFilesNation', title: '民族', minWidth: 100},
+                    {field: 'personnelFilesIdCard', title: '身份证号', minWidth: 100},
+                    {field: 'departmentName', title: ' 所属部门', minWidth: 100},
+                    {field: 'personnelFilesFirstDegreeUniversity', title: '毕业院校', minWidth: 100},
+                    {field: 'personnelFilesFirstDegreeName', title: '第一学位', minWidth: 100},
+                    {field: 'personnelFilesTitle', title: '职称', minWidth: 100},
+                    {title: '操作', toolbar: '#personnelFiles-option', minWidth: 140}
+                ]]
+            });
+        }
+
+        function getQueryParams(flag) {
+            deptId = deptXmlSelect.getValue('valueStr');
+            if (flag) {
+                deptId = '';
+            }
+            let params = $searchForm.serializeJson();
+            params.personnelFilesDepartmentId = deptId;
+
+            return params;
+        }
+
+        function deleteUsers(ids) {
+            febs.get(ctx + 'personnelFiles/delete/' + ids, null, function () {
+                febs.alert.success('删除人事档案成功！');
+                $query.click();
+            });
+        }
+    })
+</script>

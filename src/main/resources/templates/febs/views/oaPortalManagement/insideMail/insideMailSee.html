@@ -1,0 +1,56 @@
+<style>
+    #user-update {
+        padding: 20px 25px 25px 0;
+    }
+</style>
+<div class="layui-fluid" id="onlineLearningPublicPublic-see">
+
+    <div class="layui-field-box">
+        <!-- 子页内容框 -->
+        <div class="zy_contentbox">
+            <!-- zy_content -->
+            <div class="zy_content fix">
+
+                <div class="zy_conbox">
+                    <div class="zy_newsxq">
+                        <div class="xq_tit bdb_d">
+                            <h1 id="olTitle">[[${#strings.defaultString(insideMailBean.insideMailTheme,'无标题')}]]</h1>
+                            <p><span id="olReleaseTime">时间：[[${#strings.defaultString(insideMailBean.createTime,'时间')}]]</span>&nbsp;&nbsp;<span id="technicalInformationTypeName">发件人：[[${#strings.defaultString(insideMailBean.insideMaiFromUserName,'无发件人')}]]</span>&nbsp;</p>
+                        </div>
+                        <hr>
+                        <div class="txt" id="olContent">
+                            <p id="enclosureUrl"></p>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- zy_content end -->
+        </div>
+        <!-- 内容框end -->
+
+    </div>
+</div>
+
+<script data-th-inline="javascript">
+    layui.use(['febs', 'form','laydate','upload'], function () {
+        let $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            form = layui.form,
+            insideMailBean = [[${insideMailBean}]],
+            validate = layui.validate,
+            laydate = layui.laydate,
+            upload = layui.upload,
+            dataPermissionXmlSelect,
+            roleXmSelect,
+            deptXmlSelect;
+        if(insideMailBean.insideMailEnclosureUrl != null){
+            $("#olContent").append('<a href="'+insideMailBean.insideMailEnclosureUrl+'">下载附件</a>' )
+        }
+            $("#olContent").append(insideMailBean.insideMailContent)
+        $('#febs-insideMail').find('#query').click();
+
+    });
+</script>

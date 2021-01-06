@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.brad.web.webspringboot.oaSystem.mapper.NoticeEntityMapper" >
+
+
+  <!--查询通知公告表-->
+  <select id="getNoticeEntityList" resultType="com.brad.web.webspringboot.oaSystem.bean.NoticeBean" parameterType="com.brad.web.webspringboot.oaSystem.bean.NoticeBean"   >
+    SELECT
+      ohne.id AS id,
+      ohne.notice_title AS noticeTitle,
+      ohne.notice_release_time AS noticeReleaseTime,
+      ohne.create_time AS createTime,
+      ohne.notice_content AS noticeContent,
+      ohne.notice_number_visits AS noticeNumberVisits
+
+    FROM
+     oa_hospital_notice ohne
+    <where>
+      <if test="noticeBean.id != null and noticeBean.id !='' ">
+        and ohne.id=#{noticeBean.id,jdbcType=VARCHAR}
+      </if>
+      <if test="noticeBean.noticeTitle != null and noticeBean.noticeTitle !=''">
+        and ohne.notice_title like concat("%",#{noticeBean.noticeTitle,jdbcType=VARCHAR} ,"%")
+      </if>
+      <if test="noticeBean.noticeReleaseTime != null and noticeBean.noticeReleaseTime !=''">
+        and ohne.notice_release_time=#{noticeBean.noticeReleaseTime,jdbcType=VARCHAR}
+      </if>
+    </where>
+    order by ohne.create_time desc
+  </select>
+
+  <!--查询通知公告表(列表，可根据id或其他条件查询详情)-->
+  <select id="getNoticeEntityByList" resultType="com.brad.web.webspringboot.oaSystem.bean.NoticeBean" parameterType="com.brad.web.webspringboot.oaSystem.bean.NoticeBean"   >
+    SELECT
+    ohne.id AS id,
+    ohne.notice_title AS noticeTitle,
+    ohne.notice_release_time AS noticeReleaseTime,
+    ohne.create_time AS createTime,
+    ohne.notice_content AS noticeContent,
+    ohne.notice_number_visits AS noticeNumberVisits
+
+    FROM
+    oa_hospital_notice ohne
+    <where>
+      <if test="noticeBean.id != null and noticeBean.id !='' ">
+        and ohne.id=#{noticeBean.id,jdbcType=VARCHAR}
+      </if>
+      <if test="noticeBean.noticeTitle != null and noticeBean.noticeTitle !=''">
+        and ohne.notice_title like concat("%",#{noticeBean.noticeTitle,jdbcType=VARCHAR} ,"%")
+      </if>
+      <if test="noticeBean.noticeReleaseTime != null and noticeBean.noticeReleaseTime !=''">
+        and ohne.notice_release_time=#{noticeBean.noticeReleaseTime,jdbcType=VARCHAR}
+      </if>
+    </where>
+    order by ohne.create_time desc
+  </select>
+
+<!--  &lt;!&ndash;查询通知公告表&ndash;&gt;-->
+<!--  <select id="getNoticeEntityOACommonList" resultType="com.xueguang.oa.hospital.oaportalservices.bean.NoticeBean"   parameterType="map"  >-->
+<!--    SELECT-->
+<!--    ohne.id AS id,-->
+<!--    ohne.notice_title AS noticeTitle,-->
+<!--    ohne.notice_release_time AS noticeReleaseTime,-->
+<!--    ohne.create_time AS createTime,-->
+<!--    ohne.notice_content AS noticeContent,-->
+<!--    ohne.notice_number_visits AS noticeNumberVisits-->
+
+<!--    FROM-->
+<!--    oa_hospital_notice ohne-->
+<!--    <where>-->
+<!--      <if test="id != null and id !='' ">-->
+<!--        and ohne.id=#{id,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="checkId != null and checkId !=''">-->
+<!--        and ohne.id !=#{checkId,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="noticeTitle != null and noticeTitle !=''">-->
+<!--        and ohne.notice_title like concat("%",#{noticeTitle,jdbcType=VARCHAR} ,"%")-->
+
+<!--      </if>-->
+<!--      <if test="noticeReleaseTime != null and noticeReleaseTime !=''">-->
+<!--        and ohne.notice_release_time=#{noticeReleaseTime,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--    </where>-->
+<!--    order by ohne.notice_release_time desc-->
+<!--  </select>-->
+
+
+  <!-- 查总数（分页）-->
+  <select id="countNoticeEntityDetail" parameterType="com.brad.web.webspringboot.oaSystem.bean.NoticeBean" resultType="long">
+    SELECT
+    count(ohne.id)
+    FROM
+    oa_hospital_notice ohne
+    <where>
+      <if test="noticeBean.id != null and noticeBean.id !='' ">
+        and ohne.id=#{noticeBean.id,jdbcType=VARCHAR}
+      </if>
+      <if test="noticeBean.noticeTitle != null and noticeBean.noticeTitle !=''">
+        and ohne.notice_title like concat("%",#{noticeBean.noticeTitle,jdbcType=VARCHAR} ,"%")
+      </if>
+      <if test="noticeBean.noticeReleaseTime != null and noticeBean.noticeReleaseTime !=''">
+        and ohne.notice_release_time=#{noticeBean.noticeReleaseTime,jdbcType=VARCHAR}
+      </if>
+    </where>
+    order by ohne.create_time desc
+  </select>
+</mapper>

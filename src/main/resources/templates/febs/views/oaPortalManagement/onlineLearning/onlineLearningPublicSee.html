@@ -1,0 +1,51 @@
+<style>
+    #user-update {
+        padding: 20px 25px 25px 0;
+    }
+</style>
+<div class="layui-fluid" id="onlineLearningPublicPublic-see">
+
+    <div class="layui-field-box">
+        <!-- 子页内容框 -->
+        <div class="zy_contentbox">
+            <!-- zy_content -->
+            <div class="zy_content fix">
+
+                <div class="zy_conbox">
+                    <div class="zy_newsxq">
+                        <div class="xq_tit bdb_d">
+                            <h1 id="olTitle">[[${#strings.defaultString(onlineLearningBean.olTitle,'无标题')}]]</h1>
+                            <p><span id="olReleaseTime">发布时间：[[${#strings.defaultString(onlineLearningBean.olReleaseTime,'无发布时间')}]]</span>&nbsp;&nbsp;<span id="technicalInformationTypeName">资料类型：[[${#strings.defaultString(onlineLearningBean.technicalInformationTypeName,'无资料类型')}]]</span>&nbsp;&nbsp<span id="olNumberVisits">浏览次数：[[${#strings.defaultString(onlineLearningBean.olNumberVisits,'无浏览次数')}]]</span></p>
+                        </div>
+                        <hr>
+                        <div class="txt" id="olContent">
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- zy_content end -->
+        </div>
+        <!-- 内容框end -->
+
+    </div>
+</div>
+
+<script data-th-inline="javascript">
+    layui.use(['febs', 'form','laydate','upload'], function () {
+        let $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            form = layui.form,
+            onlineLearningBean = [[${onlineLearningBean}]],
+            validate = layui.validate,
+            laydate = layui.laydate,
+            upload = layui.upload,
+            dataPermissionXmlSelect,
+            roleXmSelect,
+            deptXmlSelect;
+
+            $("#olContent").html(onlineLearningBean.olContent)
+    });
+</script>

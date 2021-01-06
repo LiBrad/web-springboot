@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.brad.web.webspringboot.oaSystem.mapper.InsideMailEntityMapper" >
+
+  <!--查询内部邮件列表-->
+  <select id="getInsideMailEntityList" resultType="com.brad.web.webspringboot.oaSystem.bean.InsideMailBean" parameterType="com.brad.web.webspringboot.oaSystem.bean.InsideMailBean"   >
+    SELECT
+      ohim.id AS id,
+      ohim.inside_mai_addresseel_user_id AS insideMaiAddresseelUserId,
+      ohim.inside_mai_from_user_id AS insideMaiFromUserId,
+      ohim.inside_mail_theme AS insideMailTheme,
+      ohim.inside_mail_enclosure_url AS insideMailEnclosureUrl,
+      ohim.inside_mail_content AS insideMailContent,
+      ohim.inside_mail_to_read AS insideMailToRead,
+      ohim.inside_mail_to_reply AS insideMailToReply,
+      ohim.create_time AS createTime,
+      addresseel.USERNAME AS insideMaiAddresseelUserName,
+      from_u.USERNAME AS insideMaiFromUserName
+    FROM
+     oa_hospital_inside_mail ohim
+    LEFT JOIN t_user addresseel ON addresseel.USER_ID = ohim.inside_mai_addresseel_user_id
+    LEFT JOIN t_user from_u ON from_u.USER_ID = ohim.inside_mai_from_user_id
+    <where>
+      <if test="insideMailBean.id != null and insideMailBean.id !='' ">
+        and ohim.id=#{insideMailBean.id,jdbcType=VARCHAR}
+      </if>
+      <if test="insideMailBean.insideMaiAddresseelUserId != null and insideMailBean.insideMaiAddresseelUserId !=''">
+        and ohim.inside_mai_addresseel_user_id=#{insideMailBean.insideMaiAddresseelUserId,jdbcType=VARCHAR}
+      </if>
+      <if test="insideMailBean.insideMaiFromUserId != null and insideMailBean.insideMaiFromUserId !=''">
+        and ohim.inside_mai_from_user_id=#{insideMailBean.insideMaiFromUserId,jdbcType=VARCHAR}
+      </if>
+      <if test="insideMailBean.insideMailTheme != null and insideMailBean.insideMailTheme !=''">
+        and ohim.inside_mail_theme like concat("%",#{insideMailBean.insideMailTheme,jdbcType=VARCHAR} ,"%")
+      </if>
+      <if test="insideMailBean.insideMailToRead != null and insideMailBean.insideMailToRead !=''">
+        and ohim.inside_mail_to_read=#{insideMailBean.insideMailToRead,jdbcType=VARCHAR}
+      </if>
+      <if test="insideMailBean.insideMailToReply != null and insideMailBean.insideMailToReply !=''">
+        and ohim.inside_mail_to_reply=#{insideMailBean.insideMailToReply,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+
+  <!--  总数（分页）-->
+  <select id="countNewsEntityDetail" parameterType="com.brad.web.webspringboot.oaSystem.bean.InsideMailBean" resultType="long">
+    SELECT
+    count(ohim.id)
+    FROM
+    oa_hospital_inside_mail ohim
+    LEFT JOIN t_user addresseel ON addresseel.USER_ID = ohim.inside_mai_addresseel_user_id
+    LEFT JOIN t_user from_u ON from_u.USER_ID = ohim.inside_mai_from_user_id
+    <where>
+      <if test="insideMailBean.id != null and insideMailBean.id !='' ">
+        and ohim.id=#{insideMailBean.id,jdbcType=VARCHAR}
+      </if>
+      <if test="insideMailBean.insideMaiAddresseelUserId != null and insideMailBean.insideMaiAddresseelUserId !=''">
+        and ohim.inside_mai_addresseel_user_id=#{insideMailBean.insideMaiAddresseelUserId,jdbcType=VARCHAR}
+      </if>
+      <if test="insideMailBean.insideMaiFromUserId != null and insideMailBean.insideMaiFromUserId !=''">
+        and ohim.inside_mai_from_user_id=#{insideMailBean.insideMaiFromUserId,jdbcType=VARCHAR}
+      </if>
+      <if test="insideMailBean.insideMailTheme != null and insideMailBean.insideMailTheme !=''">
+        and ohim.inside_mail_theme like concat("%",#{insideMailBean.insideMailTheme,jdbcType=VARCHAR} ,"%")
+      </if>
+      <if test="insideMailBean.insideMailToRead != null and insideMailBean.insideMailToRead !=''">
+        and ohim.inside_mail_to_read=#{insideMailBean.insideMailToRead,jdbcType=VARCHAR}
+      </if>
+      <if test="insideMailBean.insideMailToReply != null and insideMailBean.insideMailToReply !=''">
+        and ohim.inside_mail_to_reply=#{insideMailBean.insideMailToReply,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.brad.web.webspringboot.oaSystem.mapper.GeneralApprovalEntityMapper" >
+
+
+
+  <!--查询通用审批列表-->
+  <select id="getGeneralApprovalEntityList" resultType="com.brad.web.webspringboot.oaSystem.bean.GeneralApprovalBean" parameterType="com.brad.web.webspringboot.oaSystem.bean.GeneralApprovalBean"   >
+    SELECT
+      ohga.id AS id,
+      ohga.approved_by_user_id AS approvedByUserId,
+      ohga.applicant_user_id AS applicantUserId,
+      ohga.application_title AS applicationTitle,
+      ohga.approval_image_url AS approvalImageUrl,
+      ohga.approval_enclosure_url AS approvalEnclosureUrl,
+      ohga.approval_results AS approvalResults,
+      ohga.approval_time AS approvalTime,
+      ohga.create_time AS createTime,
+      ohga.application_content AS applicationContent,
+      ohga.approval_details AS approvalDetails,
+      ohga.sign AS sign,
+      ohga.approval_comments AS approvalComments,
+    addresseel.USERNAME AS approvedByUserUserName,
+    from_u.USERNAME AS applicantUserName
+    FROM
+     oa_hospital_general_approval ohga
+    LEFT JOIN t_user addresseel ON addresseel.USER_ID = ohga.approved_by_user_id
+    LEFT JOIN t_user from_u ON from_u.USER_ID = ohga.applicant_user_id
+    <where>
+      <if test="generalApprovalBean.id != null and generalApprovalBean.id !='' ">
+        and ohga.id=#{generalApprovalBean.id,jdbcType=VARCHAR}
+      </if>
+      <if test="generalApprovalBean.approvedByUserId != null and generalApprovalBean.approvedByUserId !=''">
+        and ohga.approved_by_user_id=#{generalApprovalBean.approvedByUserId,jdbcType=VARCHAR}
+      </if>
+      <if test="generalApprovalBean.applicantUserId != null and generalApprovalBean.applicantUserId !=''">
+        and ohga.applicant_user_id=#{generalApprovalBean.applicantUserId,jdbcType=VARCHAR}
+      </if>
+      <if test="generalApprovalBean.applicationTitle != null and generalApprovalBean.applicationTitle !=''">
+        and ohga.application_title like concat("%",#{generalApprovalBean.applicationTitle,jdbcType=VARCHAR} ,"%")
+      </if>
+      <if test="generalApprovalBean.approvalResults != null and generalApprovalBean.approvalResults !=''">
+        and ohga.approval_results=#{generalApprovalBean.approvalResults,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+  <!--  总数（分页）-->
+  <select id="countGeneralApprovalEntityDetail" parameterType="com.brad.web.webspringboot.oaSystem.bean.GeneralApprovalBean" resultType="long">
+    SELECT
+    count(ohga.id)
+    FROM
+    oa_hospital_general_approval ohga
+    LEFT JOIN t_user addresseel ON addresseel.USER_ID = ohga.approved_by_user_id
+    LEFT JOIN t_user from_u ON from_u.USER_ID = ohga.applicant_user_id
+    <where>
+      <if test="generalApprovalBean.id != null and generalApprovalBean.id !='' ">
+        and ohga.id=#{generalApprovalBean.id,jdbcType=VARCHAR}
+      </if>
+      <if test="generalApprovalBean.approvedByUserId != null and generalApprovalBean.approvedByUserId !=''">
+        and ohga.approved_by_user_id=#{generalApprovalBean.approvedByUserId,jdbcType=VARCHAR}
+      </if>
+      <if test="generalApprovalBean.applicantUserId != null and generalApprovalBean.applicantUserId !=''">
+        and ohga.applicant_user_id=#{generalApprovalBean.applicantUserId,jdbcType=VARCHAR}
+      </if>
+      <if test="generalApprovalBean.applicationTitle != null and generalApprovalBean.applicationTitle !=''">
+        and ohga.application_title like concat("%",#{generalApprovalBean.applicationTitle,jdbcType=VARCHAR} ,"%")
+      </if>
+      <if test="generalApprovalBean.approvalResults != null and generalApprovalBean.approvalResults !=''">
+        and ohga.approval_results=#{generalApprovalBean.approvalResults,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+</mapper>

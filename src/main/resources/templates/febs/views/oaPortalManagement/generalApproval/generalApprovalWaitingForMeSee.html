@@ -1,0 +1,62 @@
+<style>
+    #user-update {
+        padding: 20px 25px 25px 0;
+    }
+</style>
+<div class="layui-fluid" id="generalApprovalWaitingForMeSee-see">
+
+    <div class="layui-field-box">
+        <!-- 子页内容框 -->
+        <div class="zy_contentbox">
+            <!-- zy_content -->
+            <div class="zy_content fix">
+
+                <div class="zy_conbox">
+                    <div class="zy_newsxq">
+                        <div class="xq_tit bdb_d">
+                            <h1 id="olTitle">[[${#strings.defaultString(generalApprovalBean.applicationTitle,'无标题')}]]</h1>
+                            <p><span id="olReleaseTime">申请时间：[[${#strings.defaultString(generalApprovalBean.createTime,'时间')}]]</span>&nbsp;&nbsp;<span id="technicalInformationTypeName">申请人：[[${#strings.defaultString(generalApprovalBean.applicantUserName,'无发件人')}]]</span>&nbsp;</p>
+                        </div>
+                        <hr>
+                        <div class="txt" id="olContent">
+                            <p id="enclosureUrl"></p>
+                            <p id="approvalImageUrl"></p>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- zy_content end -->
+        </div>
+        <!-- 内容框end -->
+
+    </div>
+</div>
+
+<script data-th-inline="javascript">
+    layui.use(['febs', 'form','laydate','upload'], function () {
+        let $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            form = layui.form,
+            generalApprovalBean = [[${generalApprovalBean}]],
+            validate = layui.validate,
+            laydate = layui.laydate,
+            upload = layui.upload,
+            dataPermissionXmlSelect,
+            roleXmSelect,
+            deptXmlSelect;
+        if(generalApprovalBean.approvalEnclosureUrl != null){
+            $("#olContent").append('<strong>审批附赠附件：</strong><a href="'+generalApprovalBean.approvalEnclosureUrl+'">下载附件</a>' )
+        }
+        if(generalApprovalBean.approvalImageUrl != null){
+            $("#olContent").append('<br /><br /><strong>审批附赠图片：</strong><img src="'+generalApprovalBean.approvalImageUrl+'" style="width:500px;height:400px"/>' )
+        }
+            $("#olContent").append("<br /><br /><strong>申请内容：</strong>"+generalApprovalBean.applicationContent)
+            $("#olContent").append("<br /><br /><strong>审批详情：</strong>"+generalApprovalBean.approvalDetails)
+
+        $('#febs-generalApproval').find('#query').click();
+
+    });
+</script>

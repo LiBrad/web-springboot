@@ -1,0 +1,482 @@
+<style>
+    #personnelFiles-add {
+        padding: 20px 25px 25px 0;
+    }
+</style>
+
+<!--<style>-->
+<!--    /* 设置富文本高度 */-->
+<!--    .w-e-text-container{-->
+<!--        height: 400px !important;/*!important是重点，因为原div是行内样式设置的高度300px*/-->
+<!--    }-->
+<!--    /* 富文本WANGEDITOR层级太高覆盖问题 */-->
+<!--    .w-e-menu {-->
+<!--        z-index: 2 !important;-->
+<!--    }-->
+<!--    .w-e-text-container {-->
+<!--        z-index: 1 !important;-->
+<!--    }-->
+
+<!--</style>-->
+<div class="layui-fluid" id="personnelFiles-add">
+    <form class="layui-form" action="" lay-filter="personnelFiles-add-form">
+
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <label class="layui-form-label  febs-form-item-require">姓名</label>
+            <div class="layui-input-inline">
+                <input type="text" id="personnelFilesName" name="personnelFilesName" lay-verify="required|personnelFilesName"
+                       placeholder="请输入姓名" class="layui-input" autocomplete="off">
+            </div>
+
+            <label class="layui-form-label  febs-form-item-require">性别</label>
+            <div class="layui-input-inline">
+                <select id="personnelFilesGender" name="personnelFilesGender" lay-verify="required|personnelFilesGender" style="height: 38px;border-color: #F0F0F0;"
+                        lay-search>
+                    <option value=""></option>
+                    <option value="12">男</option>
+                    <option value="13">女</option>
+                </select>
+            </div>
+
+            <label class="layui-form-label  febs-form-item-require">出生日期</label>
+            <div class="layui-input-inline">
+                <input type="text" id="personnelFilesDateBirth" name="personnelFilesDateBirth" lay-verify="required|personnelFilesDateBirth"
+                       placeholder="请选择出生日期" class="layui-input" autocomplete="off">
+            </div>
+
+        </div>
+
+
+
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <label class="layui-form-label  febs-form-item-require">民族</label>
+            <div class="layui-input-inline">
+                <input type="text" id="personnelFilesNation" name="personnelFilesNation" lay-verify="required|personnelFilesNation"
+                       placeholder="请输入民族" class="layui-input" autocomplete="off">
+            </div>
+
+            <label class="layui-form-label ">籍贯</label>
+            <div class="layui-input-inline">
+                <input type="text" id="personnelFilesNativePlace" name="personnelFilesNativePlace" placeholder="请输入籍贯" class="layui-input"
+                       autocomplete="off">
+            </div>
+
+            <label class="layui-form-label ">一寸照片</label>
+            <div class="layui-input-inline">
+                <button type="button" class="layui-btn" id="newsImageUpload">
+                    <i class="layui-icon">&#xe67c;</i>上传寸照
+                </button>文件名称: <span id="newsImageName"></span>
+            </div>
+
+        </div>
+
+
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <label class="layui-form-label  febs-form-item-require">身份证号</label>
+            <div class="layui-input-inline">
+                <input type="text" id="personnelFilesIdCard" oninput="value=value.replace(/[^\d]/g,'')" name="personnelFilesIdCard" lay-verify="required|identity"
+                       placeholder="请输入身份证号" class="layui-input" autocomplete="off">
+            </div>
+
+            <label class="layui-form-label ">政治面貌</label>
+            <div class="layui-input-inline">
+                <input type="text" id="personnelFilesPoliticalSituation" name="personnelFilesPoliticalSituation" placeholder="请输入政治面貌"
+                       class="layui-input" autocomplete="off">
+            </div>
+
+            <label class="layui-form-label">参加工作时间</label>
+            <div class="layui-input-inline">
+                    <input type="text" id="personnelFilesFristWorkingHours" name="personnelFilesFristWorkingHours" placeholder="请选择参加工作时间"
+                           class="layui-input" autocomplete="off">
+            </div>
+
+        </div>
+
+
+
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <label class="layui-form-label  febs-form-item-require"> 所属部门</label>
+            <div class="layui-input-inline">
+<!--                <select id="personnelFilesDepartmentId" name="personnelFilesDepartmentId" lay-verify="required|personnelFilesDepartmentId"-->
+<!--                        style="height: 38px;border-color: #F0F0F0;" lay-search>-->
+<!--                    <option value=""></option>-->
+<!--                </select>-->
+
+                <div  id="user-add-dept">
+                </div>
+            </div>
+
+            <label class="layui-form-label "> 所属部门类别</label>
+            <div class="layui-input-inline">
+                <input type="text" id="personnelFilesDepartmentCategory" name="personnelFilesDepartmentCategory" placeholder="请输入 所属部门类别"
+                       class="layui-input" autocomplete="off">
+            </div>
+
+            <label class="layui-form-label">来院工作时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="personnelFilesHospitalNowWorkingHours" name="personnelFilesHospitalNowWorkingHours"
+                           placeholder="请选择来院工作" class="layui-input" autocomplete="off">
+                </div>
+
+        </div>
+
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <label class="layui-form-label ">职业证书类别</label>
+            <div class="layui-input-inline">
+                <input type="text" id="personnelFilesProfessionalCertificateType" name="personnelFilesProfessionalCertificateType"
+                       placeholder="请输入职业证书类别" class="layui-input" autocomplete="off">
+            </div>
+
+            <label class="layui-form-label ">职业证书编号</label>
+            <div class="layui-input-inline">
+                <input type="text" id="personnelFilesProfessionalCertificateNumber" name="personnelFilesProfessionalCertificateNumber"
+                       placeholder="请输入职业证书编号" class="layui-input" autocomplete="off">
+            </div>
+
+            <label class="layui-form-label">取得</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="personnelFilesProfessionalCertificateTime" name="personnelFilesProfessionalCertificateTime"
+                           placeholder="请选择取得" class="layui-input" autocomplete="off">
+                </div>
+
+        </div>
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <label class="layui-form-label  febs-form-item-require">第一学历</label>
+            <div class="layui-input-inline">
+                <select id="personnelFilesFirstDegree" name="personnelFilesFirstDegree" lay-verify="required|personnelFilesFirstDegree"
+                        style="height: 38px;border-color: #F0F0F0;" lay-search>
+                    <option value=""></option>
+                    <option value="15">研究生学历</option><option value="16">本科学历</option><option value="17">专科（大专）学历</option><option value="18">高中（中专）学历</option><option value="19">初中学历及以下</option>
+                </select>
+
+
+            </div>
+
+            <label class="layui-form-label  febs-form-item-require">毕业院校</label>
+            <div class="layui-input-inline">
+                <input type="text" id="personnelFilesFirstDegreeUniversity" lay-verify="required|personnelFilesFirstDegreeUniversity"
+                       name="personnelFilesFirstDegreeUniversity" placeholder="请输入第一学历毕业院校" class="layui-input" autocomplete="off">
+            </div>
+
+            <label class="layui-form-label  febs-form-item-require  ">毕业</label>
+            <div class="layui-input-inline">
+                <input type="text" id="personnelFilesFirstDegreeTime" lay-verify="required|personnelFilesFirstDegreeTime" name="personnelFilesFirstDegreeTime"
+                       placeholder="请选择第一学历毕业" class="layui-input" autocomplete="off">
+            </div>
+
+        </div>
+
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <label class="layui-form-label ">第二学历</label>
+            <div class="layui-input-inline">
+                <select id="personnelFilesSecondDegree" name="personnelFilesSecondDegree" style="height: 38px;border-color: #F0F0F0;"
+                        lay-search>
+                    <option value=""></option>
+                </select>
+            </div>
+
+            <label class="layui-form-label ">毕业学校</label>
+            <div class="layui-input-inline">
+                <input type="text" id="personnelFilesSecondDegreeUniversity" name="personnelFilesSecondDegreeUniversity"
+                       placeholder="请输入第二学历毕业学校" class="layui-input" autocomplete="off">
+            </div>
+
+            <label class="layui-form-label">毕业</label>
+            <div class="layui-input-inline">
+                <input type="text" id="personnelFilesSecondDegreeTime" name="personnelFilesSecondDegreeTime" placeholder="请选择第二学历毕业"
+                       class="layui-input" autocomplete="off">
+            </div>
+
+        </div>
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <label class="layui-form-label ">职称</label>
+            <div class="layui-input-inline">
+
+                <input type="text" id="personnelFilesTitle" name="personnelFilesTitle" placeholder="请输入职称"
+                       class="layui-input" autocomplete="off">
+            </div>
+
+            <label class="layui-form-label ">职称取得</label>
+            <div class="layui-input-inline">
+                <input type="text" id="personnelFilesTitleTime" name="personnelFilesTitleTime" placeholder="请选择职称取得" class="layui-input"
+                       autocomplete="off">
+            </div>
+
+            <label class="layui-form-label">聘任</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="personnelFilesTitleAppointmentTime" name="personnelFilesTitleAppointmentTime" placeholder="请选择聘任"
+                           class="layui-input" autocomplete="off">
+                </div>
+
+        </div>
+        <div class="layui-form-item" style="padding-right: 20px">
+            <label class="layui-form-label ">职工类别</label>
+            <div class="layui-input-inline">
+                <select id="personnelFilesStaffCategoryId" name="personnelFilesStaffCategoryId" style="height: 38px;border-color: #F0F0F0;"
+                        lay-search>
+                    <option value=""></option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block" style="width: 819px">
+                <textarea id="personnelFilesRemarks" name="personnelFilesRemarks"  class="layui-textarea" maxlength="100" autocomplete="off"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="personnelFiles-add-form-submit" id="submit"></button>
+<!--            <button type="reset" class="layui-btn" id="reset"></button>-->
+        </div>
+    </form>
+</div>
+
+<script>
+    layui.use(['febs', 'form', 'validate','laydate','upload', 'xmSelect'], function () {
+        let $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            form = layui.form,
+            xmSelect = layui.xmSelect,
+            validate = layui.validate,
+            laydate = layui.laydate,
+            upload = layui.upload,
+            dataPermissionXmlSelect,
+            roleXmSelect,
+            deptXmlSelect;
+
+
+        form.verify(validate);
+        form.render();
+
+
+        //日期选择器
+        laydate.render({
+            elem: '#personnelFilesReleaseTime',
+            type: 'datetime'
+        });
+
+
+        // //第一学历下拉
+        // $.ajax({
+        //     url:  ctx + 'sysDictionaryController/getSysDictionaryList?type=degree_type' ,
+        //
+        //     async: false,
+        //     success: function(res) {
+        //
+        //         //解决 Unexpected token o in JSON at position 1问题
+        //         var dataObj = typeof res == 'string' ? JSON.parse(res) : res;
+        //
+        //         // var dataObj = JSON.parse(res);
+        //         // console.log(dataObj)
+        //         if (dataObj != null && dataObj.dataSource.list.length > 0) {
+        //             var groupOption;
+        //             for (var i = 0; i < dataObj.dataSource.list.length; i++) {
+        //                 groupOption = groupOption + '<option value="' + dataObj.dataSource.list[i].id + '">' + dataObj.dataSource
+        //                     .list[i].name + '</option>';
+        //             }
+        //             $("#personnelFilesFirstDegree").append(groupOption);
+        //
+        //             alert(groupOption)
+        //             form.render('select'); //一定要加form.render();
+        //             // BindStrainDropList();
+        //         }
+        //     }
+        // });
+
+        //第二学历下拉
+        $.ajax({
+            url:  ctx + 'sysDictionaryController/getSysDictionaryList?type=degree_type' ,
+            async: false,
+            success: function(res) {
+
+                //解决 Unexpected token o in JSON at position 1问题
+                var dataObj = typeof res == 'string' ? JSON.parse(res) : res;
+
+                // var dataObj = JSON.parse(res);
+                // console.log(dataObj)
+                if (dataObj != null && dataObj.dataSource.list.length > 0) {
+                    var groupOption;
+                    for (var i = 0; i < dataObj.dataSource.list.length; i++) {
+                        groupOption = groupOption + '<option value="' + dataObj.dataSource.list[i].id + '">' + dataObj.dataSource
+                            .list[i].name + '</option>';
+                    }
+                    $("#personnelFilesSecondDegree").append(groupOption);
+                    form.render('select'); //一定要加form.render();
+                    // BindStrainDropList();
+                }
+            }
+        });
+
+        //职工类别下拉
+        $.ajax({
+            url:  ctx + 'sysDictionaryController/getSysDictionaryList?type=staff_category_type' ,
+            async: false,
+            success: function(res) {
+
+                //解决 Unexpected token o in JSON at position 1问题
+                var dataObj = typeof res == 'string' ? JSON.parse(res) : res;
+
+                // var dataObj = JSON.parse(res);
+                // console.log(dataObj)
+                if (dataObj != null && dataObj.dataSource.list.length > 0) {
+                    var groupOption;
+                    for (var i = 0; i < dataObj.dataSource.list.length; i++) {
+                        groupOption = groupOption + '<option value="' + dataObj.dataSource.list[i].id + '">' + dataObj.dataSource
+                            .list[i].name + '</option>';
+                    }
+                    $("#personnelFilesStaffCategoryId").append(groupOption);
+                    form.render('select'); //一定要加form.render();
+                    // BindStrainDropList();
+                }
+            }
+        });
+
+
+        //上传封面图片
+        var personnelFilesImageUrl;
+        var url = ''
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#newsImageUpload', //绑定元素
+            accept: 'images',
+            url:  ctx + 'upload/uploadImage' , //上传接口
+            acceptMime: 'image/*',
+            ext: 'jpg|png|gif|bmp|jpeg',
+            choose: function(obj) {
+                obj.preview(function(index, file, result) {
+                    $("#newsImageUpload").html(file.name);
+                });
+            },
+            done: function(res) {
+                //上传完毕回调
+                console.log(res)
+                if (res.errcode == "200") {
+                    layer.msg("上传成功");
+                    personnelFilesImageUrl = res.dataSource.list[0].imgUrl;
+
+                } else {
+                    alert("上传失败！")
+                    if (code == "10005") {
+                        window.top.location.href = 'login.html';
+                    }
+                }
+            },
+            error: function(res) {
+                //请求异常回调
+            }
+        });
+
+
+
+        //	出生日期-日期选择器
+        laydate.render({
+            elem: '#personnelFilesDateBirth',
+        });
+        //	参加工作-日期选择器
+        laydate.render({
+            elem: '#personnelFilesFristWorkingHours',
+        });
+        //	来院工作时间-日期时间选择器
+        laydate.render({
+            elem: '#personnelFilesHospitalNowWorkingHours',
+        });
+
+        //	职业证书取得时间-日期时间选择器
+        laydate.render({
+            elem: '#personnelFilesProfessionalCertificateTime',
+        });
+        //	第一学历_毕业时间-日期时间选择器
+        laydate.render({
+            elem: '#personnelFilesFirstDegreeTime',
+        });
+
+        //	第二学历_毕业时间-日期时间选择器
+        laydate.render({
+            elem: '#personnelFilesSecondDegreeTime',
+        });
+
+        //	职称取得时间-日期时间选择器 解决了 laydate 时间框弹窗点击弹出后立马消失的问题解决
+        laydate.render({
+            elem: '#personnelFilesTitleTime',
+            trigger: 'click',
+            done: function(value, date, endDate) {
+
+            }
+        });
+
+        //	聘任时间-日期时间选择器 解决了 laydate 时间框弹窗点击弹出后立马消失的问题解决
+        laydate.render({
+            elem: '#personnelFilesTitleAppointmentTime',
+            trigger: 'click',
+            done: function(value, date, endDate) {
+
+            }
+        });
+
+        deptXmlSelect = xmSelect.render({
+            el: '#user-add-dept',
+            filterable: true,
+            model: {label: {type: 'text'}},
+            tree: {
+                show: true,
+                strict: false,
+                showLine: false,
+                clickCheck: true,
+                expandedKeys: [-1],
+            },
+            name: 'personnelFilesDepartmentId',
+            theme: {
+                color: '#52c41a',
+            },
+            prop: {
+                value: 'id'
+            },
+            height: 'auto',
+            on: function (data) {
+                if (data.isAdd) {
+                    return data.change.slice(0, 1)
+                }
+            }
+        });
+
+        febs.get(ctx + 'dept/select/tree', null, function (data) {
+            deptXmlSelect.update(
+                data
+            )
+
+        });
+
+
+
+        form.render();
+
+        form.on('submit(personnelFiles-add-form-submit)', function (data) {
+
+            if (!data.field.personnelFilesDepartmentId) {
+                febs.alert.warn('请选择所属部门');
+                return false;
+            }
+            data.field.personnelFilesPhotoUrl= personnelFilesImageUrl
+            if(confirm("请您确认信息无误？姓名、性别、出生日期、民族、身份证这些信息一旦提交将无法修改！")) {
+                febs.post(ctx + 'personnelFiles', data.field, function () {
+                    layer.closeAll();
+                    febs.alert.success('人事档案添加成功！');
+                    $('#febs-personnelFiles').find('#query').click();
+                });
+
+            }
+            return false;
+        });
+    });
+</script>

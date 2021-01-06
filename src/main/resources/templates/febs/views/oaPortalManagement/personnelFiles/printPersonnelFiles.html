@@ -1,0 +1,338 @@
+
+<style>
+    .bdb_d {
+        border-bottom: 1px solid #ddd;
+    }
+
+    /*子页内容框*/
+    .zy_contentbox {
+        min-height: 580px;
+        margin-top: 30px;
+        padding: 0 5px;
+    }
+
+    .zy_content {
+        margin-bottom: 50px;
+    }
+
+    /*其他通用展示页*/
+    .zy_conbox {
+        width: 1100px;
+        margin: 0 auto;
+    }
+
+    /*新闻详情*/
+    .zy_newsxq .xq_tit {
+        padding: 20px 0 30px;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .zy_newsxq .xq_tit h1 {
+        font-size: 32px;
+        color: #333;
+        line-height: 48px;
+        width: 760px;
+        margin: 0 auto;
+    }
+
+    .zy_newsxq .xq_tit p {
+        font-size: 14px;
+        color: #999;
+        margin-top: 30px;
+    }
+
+    .zy_newsxq .xq_tit p span {
+        margin-right: 20px;
+    }
+
+    .zy_newsxq .txt {
+        font-size: 16px;
+        color: #666;
+        line-height: 36px;
+    }
+
+    .zy_newsxq .txt * {
+        margin: 24px 0;
+    }
+
+    .zy_newsxq .txt img {
+        display: block;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    /* 悬浮 */
+    .fixed {
+        position: fixed;
+        left: 0;
+        top: 0;
+    }
+    @page { size: landscape; }
+
+</style>
+<body>
+<div class="layui-fluid" id="personnelFiles-print">
+
+    <div class="layui-field-box" >
+
+        <!-- 子页内容框 -->
+        <!-- <div class="zy_contentbox"> -->
+        <!-- zy_content -->
+        <!--startprint-->
+        <div class="zy_content fix"  id="printTable">
+
+            <div class="zy_conbox">
+                <div class="zy_newsxq">
+                    <div class="bdb_d">
+                        <h2 >工作人员档案表</h2>
+                        <p>&nbsp;</p>
+                        <p id="printInfo">
+                        </p>
+                    </div>
+                    <div class="txt" id="olContent">
+
+                        <table class="layui-table" lay-skin="nob">
+
+                            <tr>
+                                <td id="personneName"></td>
+
+                                <td id="personnelFilesGenderName"></td>
+
+                                <td id="personnelFilesDateBirth"></td>
+                            </tr>
+                            <tr>
+                                <td id="personnelFilesNation"></td>
+
+                                <td id="personnelFilesNativePlace"></td>
+
+                                <td >一寸照片：</td>
+                                <td rowspan="2"></td>
+                                <td rowspan="2"></td>
+                                <td rowspan="2"></td>
+                            </tr>
+                            <tr>
+                                <td id="personnelIdCard"> </td>
+
+                                <td id="personnelFilesPoliticalSituation"></td>
+
+                                <td id="personnelFilesFristWorkingHours"></td>
+                            </tr>
+                            <tr>
+                                <td id="departmentName"></td>
+
+                                <td id="personnelFilesDepartmentCategory"></td>
+
+                                <td id="personnelFilesHospitalNowWorkingHours"></td>
+                            </tr>
+                            <tr>
+                                <td id="personnelFilesProfessionalCertificateType"></td>
+
+                                <td id="personnelFilesProfessionalCertificateNumber"></td>
+
+                                <td id="personnelFilesProfessionalCertificateTime"></td>
+                            </tr>
+
+                            <tr>
+                                <td id="personnelFilesFirstDegreeName"> </td>
+
+                                <td id="personnelFilesFirstDegreeUniversity"></td>
+
+                                <td id="personnelFilesFirstDegreeTime"></td>
+                            </tr>
+
+                            <tr>
+                                <td id="personnelFilesSecondDegreeName"></td>
+
+                                <td id="personnelFilesSecondDegreeUniversity"></td>
+
+                                <td id="personnelFilesSecondDegreeTime"></td>
+                            </tr>
+
+                            <tr>
+                                <td id="personnelFilesTitle"></td>
+
+                                <td id="personnelFilesTitleTime"></td>
+
+                                <td id="personnelFilesTitleAppointmentTime"></td>
+                            </tr>
+
+
+                            <tr>
+                                <td id="personnelFilesStaffCategoryName"></td>
+                            </tr>
+
+                        </table>
+                        <div class="bdb_d"></div>
+                        <p id="personnelFilesRemarks">
+                        </p>
+
+                        <div id="image" class="fixed" style="margin-left: 1300px;margin-top: 250px;">
+                                <img  id="personnelFilesPhotoUrl" src="" style="height: 200px;width: 147.5px;" />
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--endprint-->
+        <!-- zy_content end -->
+        <!-- </div> -->
+        <!-- 内容框end -->
+        </div>
+        <div class="layui-form-item febs-hide">
+<!--            <button class="layui-btn"  onclick="preview()"  id="submit" lay-submit="" lay-filter="submit"><i class="fa fa-floppy-o">&nbsp;</i>确认打印</button>-->
+
+            <button class="layui-btn" lay-submit=""  lay-filter="personnelFiles-print-form-submit" id="submit"></button>
+            <!--            <button type="reset" class="layui-btn" id="reset"></button>-->
+        </div>
+</div>
+</body>
+<script language="javascript">
+
+    // //打印页面
+    // function preview() {
+    //     $("#image").css("margin-left","900px")
+    //     // var v = document.getElementById("image");
+    //
+    //     v.style.marginLeft="";
+    //     v.style.marginTop="";
+    //
+    //     v.style.marginTop="120px";
+    //     v.style.marginLeft="1400px";
+    //     v.style.position="fixed";
+    //     v.style.left="0";
+    //     v.style.top="0";
+    //
+    //     // v.setAttribute('margin-top', '0px');
+    //     // margin-left: 1400px;margin-top: 120px;position: fixed;left: 0;top: 0;
+    //
+    //     // //直接调用浏览器打印功能
+    //     bdhtml=window.document.body.innerHTML;
+    //     //定义打印区域起始字符，根据这个截取网页局部内容
+    //     sprnstr="<!--startprint-->"; //打印区域开始的标记
+    //     eprnstr="<!--endprint-->";   //打印区域结束的标记
+    //     prnhtml=bdhtml.substr(bdhtml.indexOf(sprnstr)+17);
+    //     prnhtml=prnhtml.substring(0,prnhtml.indexOf(eprnstr));
+    //     //还原网页内容
+    //     window.document.body.innerHTML=prnhtml;
+    //
+    //     //开始打印
+    //     window.print();
+    //     // window.location.reload()
+    //
+    //     // $("#image").css("margin-left","1200px")
+    // }
+</script>
+<script data-th-inline="javascript">
+    layui.use(['febs', 'form','laydate','upload'], function () {
+        let $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            form = layui.form,
+            personnelFilesBean = [[${personnelFilesBean}]],
+            validate = layui.validate,
+            laydate = layui.laydate,
+            upload = layui.upload,
+            dataPermissionXmlSelect,
+            roleXmSelect,
+            deptXmlSelect;
+
+            // $("#olContent").html(onlineLearningBean.olContent)
+
+
+        //打印页面
+        function preview() {
+                // $("#image").css("marginTop","900px")
+                var v = document.getElementById("image");
+
+            v.style.marginLeft="";
+                v.style.marginTop="";
+
+                v.style.marginTop="120px";
+                v.style.marginLeft="890px";
+                v.style.position="fixed";
+                v.style.left="0";
+                v.style.top="0";
+            // document.getElementById("personnelFiles-print").attr("src",personnelFilesBean.personnelFilesPhotoUrl);
+            //直接调用浏览器打印功能
+
+            bdhtml=window.document.body.innerHTML;
+
+            bdhtml= document.getElementById("personnelFiles-print").innerHTML;
+            // alert(bdhtml)
+
+            //定义打印区域起始字符，根据这个截取网页局部内容
+            sprnstr="<!--startprint-->"; //打印区域开始的标记
+            eprnstr="<!--endprint-->";   //打印区域结束的标记
+            prnhtml=bdhtml.substr(bdhtml.indexOf(sprnstr)+17);
+            prnhtml=prnhtml.substring(0,prnhtml.indexOf(eprnstr));
+            //还原网页内容
+            // alert(prnhtml)
+            // document.getElementById("personnelFiles-print").innerHTML=prnhtml
+            window.document.body.innerHTML=prnhtml;
+
+            //开始打印
+            window.print();
+            window.location.reload()
+
+
+        }
+
+        function getNow(s) {
+            return s < 10 ? '0' + s: s;
+        }
+        var myDate = new Date();
+
+        var year=myDate.getFullYear();        //获取当前年
+        var month=myDate.getMonth()+1;   //获取当前月
+        var date=myDate.getDate();            //获取当前日
+
+
+        var h=myDate.getHours();              //获取当前小时数(0-23)
+        var m=myDate.getMinutes();          //获取当前分钟数(0-59)
+        var s=myDate.getSeconds();
+
+        var now=year+'-'+getNow(month)+"-"+getNow(date)+" "+getNow(h)+':'+getNow(m)+":"+getNow(s);
+
+
+        $("#printInfo").html("<span>操作人："+currentUser.username+"</span><p>&nbsp;</p><span>打印时间："+now+"</span>");
+
+        //赋值
+        $("#personneName").html("姓名："+personnelFilesBean.personnelFilesName);
+        $("#personnelFilesGenderName").html("性别："+personnelFilesBean.personnelFilesGenderName);
+        $("#personnelFilesDateBirth").html("出生日期："+personnelFilesBean.personnelFilesDateBirth);
+        $("#personnelFilesNation").html("民族："+personnelFilesBean.personnelFilesNation);
+        $("#personnelFilesNativePlace").html("籍贯："+personnelFilesBean.personnelFilesNativePlace);
+        $("#personnelIdCard").html("身份证号码："+personnelFilesBean.personnelFilesIdCard);
+        $("#personnelFilesPoliticalSituation").html("政治面貌："+personnelFilesBean.personnelFilesPoliticalSituation);
+        $("#personnelFilesFristWorkingHours").html("参加工作时间："+personnelFilesBean.personnelFilesFristWorkingHours);
+        $("#departmentName").html("所属科室："+personnelFilesBean.departmentName); //所属科室
+        $("#personnelFilesDepartmentCategory").html("所属科室类别："+personnelFilesBean.personnelFilesDepartmentCategory);
+        $("#personnelFilesHospitalNowWorkingHours").html("来院工作时间："+personnelFilesBean.personnelFilesHospitalNowWorkingHours);
+        $("#personnelFilesProfessionalCertificateType").html("职业证书类别："+personnelFilesBean.personnelFilesProfessionalCertificateType);
+        $("#personnelFilesProfessionalCertificateNumber").html("职业证书编号："+personnelFilesBean.personnelFilesProfessionalCertificateNumber);
+        $("#personnelFilesProfessionalCertificateTime").html("职业证书取得时间："+personnelFilesBean.personnelFilesProfessionalCertificateTime);
+        $("#personnelFilesFirstDegreeName").html("第一学历："+personnelFilesBean.personnelFilesFirstDegreeName);
+        $("#personnelFilesFirstDegreeUniversity").html("毕业院校："+personnelFilesBean.personnelFilesFirstDegreeUniversity);
+        $("#personnelFilesFirstDegreeTime").html("毕业时间："+personnelFilesBean.personnelFilesFirstDegreeTime);
+        $("#personnelFilesSecondDegreeName").html(personnelFilesBean.personnelFilesSecondDegreeName == null?"第二学历：": "第二学历："+personnelFilesBean.personnelFilesSecondDegreeName);
+        $("#personnelFilesSecondDegreeUniversity").html("毕业院校："+personnelFilesBean.personnelFilesSecondDegreeUniversity);
+        $("#personnelFilesSecondDegreeTime").html("毕业时间："+personnelFilesBean.personnelFilesSecondDegreeTime);
+        $("#personnelFilesTitle").html("职称："+personnelFilesBean.personnelFilesTitle);
+
+        $("#personnelFilesTitleTime").html("职称取得时间："+personnelFilesBean.personnelFilesTitleTime);
+        $("#personnelFilesTitleAppointmentTime").html("聘任时间："+personnelFilesBean.personnelFilesTitleAppointmentTime);
+        $("#personnelFilesStaffCategoryName").html(personnelFilesBean.personnelFilesStaffCategoryName	== null ?"职工类别：": "职工类别："+personnelFilesBean.personnelFilesStaffCategoryName);
+        $("#personnelFilesRemarks").html("备注信息："+personnelFilesBean.personnelFilesRemarks);
+        $("#personnelFilesPhotoUrl").attr("src",personnelFilesBean.personnelFilesPhotoUrl);
+
+
+
+        form.on('submit(personnelFiles-print-form-submit)', function (data) {
+            preview()
+            return false;
+        });
+    });
+</script>

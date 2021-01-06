@@ -1,0 +1,201 @@
+<style>
+    #insideMail-add {
+        padding: 20px 25px 25px 0;
+    }
+</style>
+
+<!--<style>-->
+<!--    /* 设置富文本高度 */-->
+<!--    .w-e-text-container{-->
+<!--        height: 400px !important;/*!important是重点，因为原div是行内样式设置的高度300px*/-->
+<!--    }-->
+<!--    /* 富文本WANGEDITOR层级太高覆盖问题 */-->
+<!--    .w-e-menu {-->
+<!--        z-index: 2 !important;-->
+<!--    }-->
+<!--    .w-e-text-container {-->
+<!--        z-index: 1 !important;-->
+<!--    }-->
+
+<!--</style>-->
+<div class="layui-fluid" id="insideMail-add">
+    <form class="layui-form" action="" lay-filter="insideMail-add-form">
+
+        <div class="layui-form-item" >
+            <label class="layui-form-label febs-form-item-require">标题</label>
+            <div class="layui-input-block">
+                <input type="text" id="insideMailTheme" name="insideMailTheme" lay-verify="required|insideMailTheme" placeholder="请输入标题"
+                       class="layui-input" autocomplete="off" >
+            </div>
+        </div>
+        <div class="layui-form-item" style="padding-right: 20px">
+            <label class="layui-form-label febs-form-item-require">收件人</label>
+            <div class="layui-input-block" id="user-add"></div>
+
+        </div>
+
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <button type="button" class="layui-btn" id="insideEnclosureUpload">
+                <i class="layui-icon">&#xe67c;</i>上传附件
+            </button>文件名称: <span id="insideEnclosureName"></span>
+        </div>
+
+
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <!-- <label class="layui-form-label" data-i18n="group.groupDescription"></label> -->
+            <label class="layui-form-label febs-form-item-require">内容</label>
+            <div class="layui-input-block">
+                <div id="editor" style="height:auto;"></div>
+
+                <!-- <textarea id="marketAssemblyDescribe" name="marketAssemblyDescribe" lay-verify="required|marketAssemblyDescribe"  placeholder="请输入市场组件字数240" style="width: 500px;" class="layui-textarea"
+                 maxlength="240" autocomplete="off"></textarea> -->
+                <!--    <textarea id="remark" name="remark" data-i18n="[placeholder]house.remarkPlaceholder" class="layui-textarea"></textarea>  -->
+            </div>
+        </div>
+
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="insideMail-add-form-submit" id="submit"></button>
+<!--            <button type="reset" class="layui-btn" id="reset"></button>-->
+        </div>
+    </form>
+</div>
+
+<script>
+    layui.use(['febs', 'form', 'validate','laydate','upload', 'xmSelect'], function () {
+        let $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            form = layui.form,
+            xmSelect = layui.xmSelect,
+            validate = layui.validate,
+            laydate = layui.laydate,
+            upload = layui.upload,
+            dataPermissionXmlSelect,
+            userXmSelect,
+            deptXmlSelect;
+
+
+
+        form.verify(validate);
+        form.render();
+
+        userXmSelect = xmSelect.render({
+            el: '#user-add',
+            filterable: true,
+            toolbar: {show: true},
+            name: 'insideMaiAddresseelUserIdS',
+            theme: {
+                color: '#52c41a',
+            },
+            prop: {
+                name: 'username',
+                value: 'userId'
+            },
+            data: []
+        });
+
+        febs.get(ctx + 'user', null, function (data) {
+            userXmSelect.update({
+                data: data.data,
+                autoRow: true,
+            })
+        });
+        //日期时间选择器
+        laydate.render({
+            elem: '#insideMailReleaseTime',
+            type: 'datetime'
+        });
+
+        //上传附件
+        var insideEnclosure;
+        var url = ''
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#insideEnclosureUpload', //绑定元素
+            url:  ctx + 'upload/uploadEnclosure' , //上传接口
+            accept:"file",
+            choose: function(obj) {
+                obj.preview(function(index, file, result) {
+                    $("#insideEnclosureName").html(file.name);
+                });
+            },
+            done: function(res) {
+                //上传完毕回调
+                console.log(res)
+                if (res.errcode == "200") {
+                    layer.msg("附件上传成功");
+                    insideEnclosure = res.dataSource.list[0].enclosureUrl;
+
+                } else {
+                    alert("附件上传失败！")
+                    if (code == "10005") {
+                        window.top.location.href = 'login.html';
+                    }
+                }
+            },
+            error: function(res) {
+                //请求异常回调
+            }
+        });
+
+
+
+        //富文本编辑器
+        var E = window.wangEditor
+        var editor = new E('#editor')
+        // 配置服务器端地址
+        editor.customConfig.uploadImgServer = ctx + 'upload/uploadImage'
+        // 自定义上传参数
+        editor.customConfig.uploadFileName = 'file'
+        editor.customConfig.uploadImgHooks = {
+            // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+            // （但是，服务器端返回的必须是一个 JSON 格式字符串！！！否则会报错）
+            customInsert: function(insertImg, result, editor) {
+                // 图片上传并返回结果，自定义插入图片的事件（而不是编辑器自动插入图片！！！）
+                // insertImg 是插入图片的函数，editor 是编辑器对象，result 是服务器端返回的结果
+                // 举例：假如上传图片成功后，服务器端返回的是 {url:'....'} 这种格式，即可这样插入图片：
+
+                //解决 Unexpected token o in JSON at position 1问题
+                var dataObj = typeof result == 'string' ? JSON.parse(result) : result;
+
+                var url = dataObj.dataSource.list[0].imgUrl;
+                insertImg(url)
+
+                // result 必须是一个 JSON 格式字符串！！！否则报错
+            }
+        }
+        // 必须放到有关于编辑器设置前面
+        editor.create()
+
+
+        form.on('submit(insideMail-add-form-submit)', function (data) {
+            if (editor.txt.html()=='<p><br></p>') {
+                febs.alert.warn('请填写邮件内容');
+                return false;
+            }
+
+            if (data.field.insideMaiAddresseelUserIdS=='') {
+                febs.alert.warn('请选择收件人');
+                return false;
+            }
+            data.field.insideMailContent= editor.txt.html()
+            data.field.insideMailEnclosureUrl= insideEnclosure
+            data.field.insideMaiFromUserId= currentUser.userId
+
+
+
+            febs.post(ctx + 'insideMail',  data.field, function () {
+
+
+                layer.closeAll();
+                febs.alert.success('邮件发送成功！');
+                $('#febs-insideMail').find('#query').click();
+            });
+
+
+            return false;
+        });
+    });
+</script>

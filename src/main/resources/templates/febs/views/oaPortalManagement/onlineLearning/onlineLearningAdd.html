@@ -1,0 +1,159 @@
+<style>
+    #onlineLearning-add {
+        padding: 20px 25px 25px 0;
+    }
+</style>
+
+
+<div class="layui-fluid" id="onlineLearning-add">
+    <form class="layui-form"  action="" lay-filter="onlineLearning-add-form">
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <label class="layui-form-label febs-form-item-require">文章标题</label>
+            <div class="layui-input-block">
+                <input type="text" id="olTitle" name="olTitle" lay-verify="required|olTitle" placeholder="请输入文章标题"
+                       class="layui-input" autocomplete="off">
+            </div>
+        </div>
+
+        <div class=" layui-form-item " style="padding-right: 20px">
+            <label class="layui-form-label febs-form-item-require">资料类型</label>
+            <div class="layui-input-inline"   >
+                <select id="technicalInformationTypeId" name="technicalInformationTypeId"  lay-verify="required"   style="height: 38px;border-color: #F0F0F0;" lay-search>
+                    <option value=""></option>
+                    <option value="2">医院文件</option><option value="3">业务学习</option><option value="4">技术交流</option><option value="5">业务管理</option><option value="6">科室文档</option><option value="7">新技术</option><option value="8">新设备</option><option value="9">新药品</option><option value="10">院务党务公开</option>
+                </select>
+            </div>
+
+
+        </div>
+
+        <div class="layui-form-item" style="padding-right: 20px">
+
+
+            <label class="layui-form-label ">发布时间</label>
+            <div class="layui-input-inline">
+                <input type="text" id="olReleaseTime" name="olReleaseTime" placeholder="不选择默认当前发布时间" class="layui-input"
+                       autocomplete="off">
+
+            </div>
+        </div>
+
+
+
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <!-- <label class="layui-form-label" data-i18n="group.groupDescription"></label> -->
+            <label class="layui-form-label febs-form-item-require">文章内容</label>
+            <div class="layui-input-block">
+                <div id="editor" style="height:auto;"></div>
+
+                <!-- <textarea id="marketAssemblyDescribe" name="marketAssemblyDescribe" lay-verify="required|marketAssemblyDescribe"  placeholder="请输入市场组件字数240" style="width: 500px;" class="layui-textarea"
+                 maxlength="240" autocomplete="off"></textarea> -->
+                <!--    <textarea id="remark" name="remark" data-i18n="[placeholder]house.remarkPlaceholder" class="layui-textarea"></textarea>  -->
+            </div>
+        </div>
+
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="onlineLearning-add-form-submit" id="submit"></button>
+<!--            <button type="reset" class="layui-btn" id="reset"></button>-->
+        </div>
+    </form>
+</div>
+
+<script>
+    layui.use(['febs', 'form', 'validate','laydate','upload'], function () {
+        let $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            form = layui.form,
+            validate = layui.validate,
+            laydate = layui.laydate,
+            upload = layui.upload,
+            dataPermissionXmlSelect,
+            roleXmSelect,
+            deptXmlSelect;
+
+
+
+        form.verify(validate);
+        form.render();
+
+
+        //日期时间选择器
+        laydate.render({
+            elem: '#olReleaseTime',
+            type: 'datetime'
+        });
+
+        // technicalInformationTypeIdSelect();
+        // function technicalInformationTypeIdSelect(){
+        //     //技术资料类型下拉
+        //     $.ajax({
+        //         url:  ctx + 'sysDictionaryController/getSysDictionaryList?type=technical_information_type' , //上传接口
+        //         success: function(res) {
+        //
+        //             //解决 Unexpected token o in JSON at position 1问题
+        //             var dataObj = typeof res == 'string'?JSON.parse(res):res;
+        //
+        //             // var dataObj = JSON.parse(res);
+        //             // console.log(dataObj)
+        //             if (dataObj != null && dataObj.dataSource.list.length > 0) {
+        //                 var groupOption;
+        //                 for (var i = 0; i < dataObj.dataSource.list.length; i++) {
+        //                     groupOption = groupOption + '<option value="' + dataObj.dataSource.list[i].id + '">' + dataObj.dataSource
+        //                         .list[i].name + '</option>';
+        //                 }
+        //                 $("#technicalInformationTypeId").append(groupOption);
+        //                 alert(groupOption)
+        //                 form.render();
+        //             }
+        //         }
+        //     });
+        // }
+
+
+        //富文本编辑器
+        var E = window.wangEditor
+        var editor = new E('#editor')
+        // 配置服务器端地址 customConfigcustomConfig
+        editor.customConfig.uploadImgServer = ctx + 'upload/uploadImage'
+        // 自定义上传参数
+        editor.customConfig.uploadFileName = 'file'
+        editor.customConfig.uploadImgHooks = {
+            // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+            // （但是，服务器端返回的必须是一个 JSON 格式字符串！！！否则会报错）
+            customInsert: function(insertImg, result, editor) {
+                // 图片上传并返回结果，自定义插入图片的事件（而不是编辑器自动插入图片！！！）
+                // insertImg 是插入图片的函数，editor 是编辑器对象，result 是服务器端返回的结果
+                // 举例：假如上传图片成功后，服务器端返回的是 {url:'....'} 这种格式，即可这样插入图片：
+
+                //解决 Unexpected token o in JSON at position 1问题
+                var dataObj = typeof result == 'string' ? JSON.parse(result) : result;
+
+                var url = dataObj.dataSource.list[0].imgUrl;
+                insertImg(url)
+
+                // result 必须是一个 JSON 格式字符串！！！否则报错
+            }
+        }
+        // 必须放到有关于编辑器设置前面
+        editor.create()
+
+        form.on('submit(onlineLearning-add-form-submit)', function (data) {
+            if (editor.txt.html()=='<p><br></p>') {
+                febs.alert.warn('请填写文章内容');
+                return false;
+            }
+            data.field.olContent= editor.txt.html()
+            data.field.olUserId=currentUser.userId
+
+            febs.post(ctx + 'onlineLearning',  data.field, function () {
+                layer.closeAll();
+                febs.alert.success('文章添加成功！');
+                $('#febs-onlineLearning').find('#query').click();
+            });
+            return false;
+        });
+    });
+</script>

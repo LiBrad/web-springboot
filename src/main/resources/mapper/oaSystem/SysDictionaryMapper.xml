@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.brad.web.webspringboot.oaSystem.mapper.SysDictionaryMapper" >
+
+  <!--查询系统选项列表（只查名字和ID和可选值）-->
+  <select id="getSysDictionaryList" resultType="com.brad.web.webspringboot.oaSystem.bean.SysDictionaryBean"   parameterType="map"  >
+    SELECT
+      sd.id,
+      sd.name,
+      sd.name_value AS nameValue
+    FROM
+    oa_hospital_sys_dictionary sd
+    LEFT JOIN oa_hospital_sys_dictionary parent ON sd.parent_id = parent.id
+    <where>
+      sd.del_flag = '0' and parent.del_flag='0'
+      and parent.type = #{type,jdbcType=VARCHAR}
+      <if test="name != null and name !='' and name != 'null'">
+        and sd.NAME=#{name,jdbcType=VARCHAR}
+      </if>
+    </where>
+    ORDER BY sd.sort
+
+  </select>
+
+
+  <!--查询系统选项列表（查父类）-->
+  <select id="getSysDictionaryParentList" resultType="com.brad.web.webspringboot.oaSystem.bean.SysDictionaryBean"   parameterType="map"  >
+    SELECT
+      sd.id AS id,
+      sd.type AS type,
+      sd.name AS name,
+      sd.parent_id  AS parentId,
+      sd.name_value AS nameValue,
+      sd.del_flag AS delFlag,
+      parent.type AS parentType,
+      parent.NAME AS parentName
+    FROM
+    oa_hospital_sys_dictionary sd
+    LEFT JOIN oa_hospital_sys_dictionary parent ON sd.parent_id = parent.id
+    <where>
+      sd.del_flag = '0'
+      <if test="id != null and id !='' and id != 'null'">
+        and sd.id=#{id,jdbcType=VARCHAR}
+      </if>
+      <if test="name != null and name !='' and name != 'null'">
+        and sd.NAME=#{name,jdbcType=VARCHAR}
+      </if>
+      <if test="type != null and type !='' and type != 'null'">
+        and sd.type=#{type,jdbcType=VARCHAR}
+      </if>
+    </where>
+
+    ORDER BY sd.sort
+
+  </select>
+
+  <!-- 查询系统选项数量 -->
+  <select id="getOptionParentCount"  parameterType="map" resultType="integer">
+    SELECT
+    count(sd.id)
+    FROM
+    oa_hospital_sys_dictionary sd
+    LEFT JOIN oa_hospital_sys_dictionary parent ON sd.parent_id = parent.id
+    <where>
+      sd.del_flag = '0'
+      <if test="id != null and id !='' and id != 'null'">
+        and sd.id =#{id,jdbcType=VARCHAR}
+      </if>
+      <if test="name != null and name !='' and name != 'null'">
+        and sd.NAME=#{name,jdbcType=VARCHAR}
+      </if>
+      <if test="type != null and type !='' and type != 'null'">
+        and sd.type=#{type,jdbcType=VARCHAR}
+      </if>
+    </where>
+    order by sd.id,sd.sort
+  </select>
+
+</mapper>

@@ -1,0 +1,186 @@
+<style>
+    #user-update {
+        padding: 20px 25px 25px 0;
+    }
+</style>
+<div class="layui-fluid" id="onlineLearning-update">
+    <form class="layui-form" action="" lay-filter="onlineLearning-update-form">
+        <div class="layui-form-item febs-hide">
+            <label class="layui-form-label febs-form-item-require">文章id：</label>
+            <div class="layui-input-block">
+                <input type="text" name="id" data-th-value="${onlineLearningBean.id}">
+            </div>
+        </div>
+        <div class="layui-form-item" style="padding-right: 20px">
+            <label class="layui-form-label febs-form-item-require">文章标题</label>
+            <div class="layui-input-block">
+                <input type="text" id="olTitle" name="olTitle" lay-verify="required|olTitle" placeholder="请输入文章标题"
+                       class="layui-input" autocomplete="off" >
+            </div>
+        </div>
+
+        <div class=" layui-form-item " style="padding-right: 20px">
+            <label class="layui-form-label febs-form-item-require">资料类型</label>
+            <div class="layui-input-inline"   >
+                <select id="technicalInformationTypeId" name="technicalInformationTypeId"  lay-verify="required"   style="height: 38px;border-color: #F0F0F0;" lay-search>
+                    <option value=""></option>
+                    <option value="2">医院文件</option><option value="3">业务学习</option><option value="4">技术交流</option><option value="5">业务管理</option><option value="6">科室文档</option><option value="7">新技术</option><option value="8">新设备</option><option value="9">新药品</option><option value="10">院务党务公开</option>
+                </select>
+            </div>
+
+
+        </div>
+
+        <div class="layui-form-item" style="padding-right: 20px">
+
+
+            <label class="layui-form-label ">发布时间</label>
+            <div class="layui-input-inline">
+                <input type="text" id="olReleaseTime" name="olReleaseTime" placeholder="不选择默认当前发布时间" class="layui-input"
+                       autocomplete="off">
+
+            </div>
+        </div>
+
+
+
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <!-- <label class="layui-form-label" data-i18n="group.groupDescription"></label> -->
+            <label class="layui-form-label febs-form-item-require">文章内容</label>
+            <div class="layui-input-block">
+                <div id="editor" style="height:auto;"></div>
+
+                <!-- <textarea id="marketAssemblyDescribe" name="marketAssemblyDescribe" lay-verify="required|marketAssemblyDescribe"  placeholder="请输入市场组件字数240" style="width: 500px;" class="layui-textarea"
+                 maxlength="240" autocomplete="off"></textarea> -->
+                <!--    <textarea id="remark" name="remark" data-i18n="[placeholder]house.remarkPlaceholder" class="layui-textarea"></textarea>  -->
+            </div>
+        </div>
+
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="onlineLearning-update-form-submit" id="submit"></button>
+        </div>
+    </form>
+</div>
+
+<script data-th-inline="javascript">
+    layui.use(['febs', 'form','laydate','upload'], function () {
+        let $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            form = layui.form,
+            onlineLearningBean = [[${onlineLearningBean}]],
+            validate = layui.validate,
+            laydate = layui.laydate,
+            upload = layui.upload,
+            dataPermissionXmlSelect,
+            roleXmSelect,
+            deptXmlSelect;
+
+        form.verify(validate);
+        form.render();
+        //日期时间选择器
+        laydate.render({
+            elem: '#onlineLearningReleaseTime',
+            type: 'datetime'
+        });
+
+        //上传封面图片
+        var onlineLearningImageUrl;
+        var url = ''
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#onlineLearningImageUpload', //绑定元素
+            accept: 'images',
+            url:  ctx + 'upload/uploadImage' , //上传接口
+            acceptMime: 'image/*',
+            ext: 'jpg|png|gif|bmp|jpeg',
+            choose: function(obj) {
+                obj.preview(function(index, file, result) {
+                    $("#onlineLearningImageName").html(file.name);
+                });
+            },
+            done: function(res) {
+                //上传完毕回调
+                console.log(res)
+                if (res.errcode == "200") {
+                    layer.msg("封面图片上传成功");
+                    onlineLearningImageUrl = res.dataSource.list[0].imgUrl;
+
+                } else {
+                    alert("封面图片上传失败！")
+                    if (code == "10005") {
+                        window.top.location.href = 'login.html';
+                    }
+                }
+            },
+            error: function(res) {
+                //请求异常回调
+            }
+        });
+
+
+
+        //富文本编辑器
+        var E = window.wangEditor
+        var editor = new E('#editor')
+        // 配置服务器端地址
+        editor.customConfig.uploadImgServer = ctx + 'upload/uploadImage'
+        // 自定义上传参数
+        editor.customConfig.uploadFileName = 'file'
+        editor.customConfig.uploadImgHooks = {
+            // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+            // （但是，服务器端返回的必须是一个 JSON 格式字符串！！！否则会报错）
+            customInsert: function(insertImg, result, editor) {
+                // 图片上传并返回结果，自定义插入图片的事件（而不是编辑器自动插入图片！！！）
+                // insertImg 是插入图片的函数，editor 是编辑器对象，result 是服务器端返回的结果
+                // 举例：假如上传图片成功后，服务器端返回的是 {url:'....'} 这种格式，即可这样插入图片：
+
+                //解决 Unexpected token o in JSON at position 1问题
+                var dataObj = typeof result == 'string' ? JSON.parse(result) : result;
+
+                var url = dataObj.dataSource.list[0].imgUrl;
+                insertImg(url)
+
+                // result 必须是一个 JSON 格式字符串！！！否则报错
+            }
+        }
+        // 必须放到有关于编辑器设置前面
+        editor.create()
+
+        initUserValue();
+
+        function initUserValue() {
+            form.val("onlineLearning-update-form", {
+                "olTitle": onlineLearningBean.olTitle,
+                "olReleaseTime": onlineLearningBean.olReleaseTime,
+                "technicalInformationTypeId": onlineLearningBean.technicalInformationTypeId
+
+            });
+            // onlineLearningRecommendedType,
+            editor.txt.html(onlineLearningBean.olContent); //回显富文本编辑器内容
+            form.render();
+
+
+        }
+
+        form.on('submit(onlineLearning-update-form-submit)', function (data) {
+            if (editor.txt.html()=='<p><br></p>') {
+                febs.alert.warn('请填写文章内容');
+                return false;
+            }
+            data.field.olContent= editor.txt.html()
+            data.field.olUserId=currentUser.userId
+
+            febs.post(ctx + 'onlineLearning/update', data.field, function () {
+                layer.closeAll();
+                febs.alert.success('文章内容修改成功！');
+                $('#febs-onlineLearning').find('#query').click();
+            });
+            return false;
+        });
+
+
+
+    });
+</script>

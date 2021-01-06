@@ -1,0 +1,173 @@
+<style>
+    #video-add {
+        padding: 20px 25px 25px 0;
+    }
+</style>
+
+<!--<style>-->
+<!--    /* 设置富文本高度 */-->
+<!--    .w-e-text-container{-->
+<!--        height: 400px !important;/*!important是重点，因为原div是行内样式设置的高度300px*/-->
+<!--    }-->
+<!--    /* 富文本WANGEDITOR层级太高覆盖问题 */-->
+<!--    .w-e-menu {-->
+<!--        z-index: 2 !important;-->
+<!--    }-->
+<!--    .w-e-text-container {-->
+<!--        z-index: 1 !important;-->
+<!--    }-->
+
+<!--</style>-->
+<div class="layui-fluid" id="video-add">
+    <form class="layui-form" action="" lay-filter="video-add-form">
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <label class="layui-form-label febs-form-item-require">视频标题</label>
+            <div class="layui-input-block">
+                <input type="text" id="videoTitle" name="videoTitle" lay-verify="required|videoTitle" placeholder="请输入医院视频标题"
+                       class="layui-input" autocomplete="off" >
+            </div>
+        </div>
+
+
+        <div class="layui-form-item" style="padding-right: 20px">
+
+
+            <label class="layui-form-label ">发布时间</label>
+            <div class="layui-input-inline">
+                <input type="text" id="videoReleaseTime" name="videoReleaseTime" placeholder="不选择默认当前发布时间" class="layui-input"
+                       autocomplete="off">
+
+            </div>
+        </div>
+        <div class="layui-form-item" style="padding-right: 20px">
+            <button type="button" class="layui-btn" id="chooseFile"   >
+                <i class="layui-icon">&#xe67c;</i>上传视频
+            </button>文件名称: <span id="fileName"></span>
+        </div>
+
+
+        <div class="layui-form-item" style="padding-right: 20px">
+            <!-- <label class="layui-form-label" data-i18n="group.groupDescription"></label> -->
+            <label class="layui-form-label ">内容描述</label>
+            <div class="layui-input-block">
+                <div id="editor" style="height:auto;"></div>
+
+                <!-- <textarea id="marketAssemblyDescribe" name="marketAssemblyDescribe" lay-verify="required|marketAssemblyDescribe"  placeholder="请输入市场组件字数240" style="width: 500px;" class="layui-textarea"
+                 maxlength="240" autocomplete="off"></textarea> -->
+                <!--    <textarea id="remark" name="remark" data-i18n="[placeholder]house.remarkPlaceholder" class="layui-textarea"></textarea>  -->
+            </div>
+        </div>
+
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="video-add-form-submit" id="submit"></button>
+<!--            <button type="reset" class="layui-btn" id="reset"></button>-->
+        </div>
+    </form>
+</div>
+
+<script>
+    layui.use(['febs', 'form', 'validate','laydate','upload'], function () {
+        let $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            form = layui.form,
+            validate = layui.validate,
+            laydate = layui.laydate,
+            upload = layui.upload,
+            dataPermissionXmlSelect,
+            roleXmSelect,
+            deptXmlSelect;
+
+
+
+        form.verify(validate);
+        form.render();
+
+
+        //日期时间选择器
+        laydate.render({
+            elem: '#videoReleaseTime',
+            type: 'datetime'
+        });
+
+
+        //视频上传
+        var videoUrl;
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#chooseFile' //绑定元素
+            ,accept:'file'
+            ,url:  ctx + 'upload/uploadVideo'  //上传接口
+            ,acceptMime: 'video/*'
+            ,ext: 'mp4'
+            ,choose: function(obj) {
+                obj.preview(function(index, file, result) {
+                    $("#fileName").html(file.name);
+                });
+            }
+            ,done: function(res){
+                //上传完毕回调
+                console.log(res)
+                if (res.errcode == 200) {
+                    layer.msg("视频上传成功！");
+                    videoUrl = res.dataSource.list[0].videoUrl;
+
+                } else {
+                    layer.msg("视频上传失败，请重试！");
+                    if (res.errcode == "10005") {
+                        window.top.location.href = 'login.html';
+                    }
+                }
+            }
+            ,error: function(res){
+                //请求异常回调
+            }
+        });
+
+
+        //富文本编辑器
+        var E = window.wangEditor
+        var editor = new E('#editor')
+        // 配置服务器端地址
+        editor.customConfig.uploadImgServer = ctx + 'upload/uploadImage'
+        // 自定义上传参数
+        editor.customConfig.uploadFileName = 'file'
+        editor.customConfig.uploadImgHooks = {
+            // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+            // （但是，服务器端返回的必须是一个 JSON 格式字符串！！！否则会报错）
+            customInsert: function(insertImg, result, editor) {
+                // 图片上传并返回结果，自定义插入图片的事件（而不是编辑器自动插入图片！！！）
+                // insertImg 是插入图片的函数，editor 是编辑器对象，result 是服务器端返回的结果
+                // 举例：假如上传图片成功后，服务器端返回的是 {url:'....'} 这种格式，即可这样插入图片：
+
+                //解决 Unexpected token o in JSON at position 1问题
+                var dataObj = typeof result == 'string' ? JSON.parse(result) : result;
+
+                var url = dataObj.dataSource.list[0].imgUrl;
+                insertImg(url)
+
+                // result 必须是一个 JSON 格式字符串！！！否则报错
+            }
+        }
+        // 必须放到有关于编辑器设置前面
+        editor.create()
+
+
+        form.on('submit(video-add-form-submit)', function (data) {
+            if (videoUrl==undefined) {
+                febs.alert.warn('请上传视频');
+                return false;
+            }
+            data.field.videoContent= editor.txt.html()
+            data.field.videoUrl= videoUrl
+
+            febs.post(ctx + 'video',  data.field, function () {
+                layer.closeAll();
+                febs.alert.success('医院视频添加成功！');
+                $('#febs-video').find('#query').click();
+            });
+            return false;
+        });
+    });
+</script>

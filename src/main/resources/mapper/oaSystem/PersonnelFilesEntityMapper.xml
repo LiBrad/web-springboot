@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.brad.web.webspringboot.oaSystem.mapper.PersonnelFilesEntityMapper" >
+
+  <!--查询人事档案 -->
+  <select id="getPersonnelFilesEntityList"  resultType="com.brad.web.webspringboot.oaSystem.bean.PersonnelFilesBean" parameterType="com.brad.web.webspringboot.oaSystem.bean.PersonnelFilesBean"   >
+    SELECT
+      ohpf.id AS id,
+      ohpf.personnel_files_name AS personnelFilesName,
+      ohpf.personnel_files_gender AS personnelFilesGender,
+      ohpf.personnel_files_date_birth AS personnelFilesDateBirth,
+      ohpf.personnel_files_nation AS personnelFilesNation,
+      ohpf.personnel_files_native_place AS personnelFilesNativePlace,
+      ohpf.personnel_files_photo_url AS personnelFilesPhotoUrl,
+      ohpf.personnel_files_id_card AS personnelFilesIdCard,
+      ohpf.personnel_files_political_situation AS personnelFilesPoliticalSituation,
+      ohpf.personnel_files_frist_working_hours AS personnelFilesFristWorkingHours,
+      ohpf.personnel_files_department_id AS personnelFilesDepartmentId,
+      ohpf.personnel_files_department_category AS personnelFilesDepartmentCategory,
+      ohpf.personnel_files_hospital_now_working_hours AS personnelFilesHospitalNowWorkingHours,
+      ohpf.personnel_files_professional_certificate_type AS personnelFilesProfessionalCertificateType,
+      ohpf.personnel_files_professional_certificate_number AS personnelFilesProfessionalCertificateNumber,
+      ohpf.personnel_files_professional_certificate_time as personnelFilesProfessionalCertificateTime,
+      ohpf.personnel_files_first_degree AS personnelFilesFirstDegree,
+      ohpf.personnel_files_first_degree_university AS personnelFilesFirstDegreeUniversity,
+      ohpf.personnel_files_first_degree_time AS personnelFilesFirstDegreeTime,
+      ohpf.personnel_files_second_degree AS personnelFilesSecondDegree,
+      ohpf.personnel_files_second_degree_university AS personnelFilesSecondDegreeUniversity,
+      ohpf.personnel_files_second_degree_time AS personnelFilesSecondDegreeTime,
+      ohpf.personnel_files_title AS personnelFilesTitle,
+      ohpf.personnel_files_title_time AS personnelFilesTitleTime,
+      ohpf.personnel_files_title_appointment_time AS personnelFilesTitleAppointmentTime,
+      ohpf.personnel_files_staff_category_id AS personnelFilesStaffCategoryId,
+      ohpf.create_time AS createTime,
+      ohpf.personnel_files_remarks AS personnelFilesRemarks,
+        hd.DEPT_NAME AS departmentName,
+      (
+        SELECT
+            sd. NAME
+        FROM
+          oa_hospital_sys_dictionary sd,
+          oa_hospital_sys_dictionary parent
+        WHERE
+         sd.parent_id = parent.id
+        AND parent.type = "sex_type"
+        AND sd.id = ohpf.personnel_files_gender
+      ) AS personnelFilesGenderName,
+      (
+        SELECT
+         sd. NAME
+        FROM
+          oa_hospital_sys_dictionary sd,
+          oa_hospital_sys_dictionary parent
+        WHERE
+         sd.parent_id = parent.id
+        AND parent.type = "degree_type"
+        AND sd.id = ohpf.personnel_files_first_degree
+      ) AS personnelFilesFirstDegreeName,
+      (
+        SELECT
+         sd. NAME
+        FROM
+          oa_hospital_sys_dictionary sd,
+          oa_hospital_sys_dictionary parent
+        WHERE
+         sd.parent_id = parent.id
+        AND parent.type = "degree_type"
+        AND sd.id = ohpf.personnel_files_second_degree
+      ) AS personnelFilesSecondDegreeName,
+      (
+        SELECT
+           sd. NAME
+        FROM
+          oa_hospital_sys_dictionary sd,
+          oa_hospital_sys_dictionary parent
+        WHERE
+          sd.parent_id = parent.id
+        AND parent.type = "staff_category_type"
+        AND sd.id = ohpf.personnel_files_staff_category_id
+      ) AS personnelFilesStaffCategoryName
+    FROM
+    oa_hospital_personnel_files ohpf
+    LEFT JOIN t_dept hd ON ohpf.personnel_files_department_id = hd.DEPT_ID
+
+    <where>
+      <if test="personnelFilesBean.id != null and personnelFilesBean.id !='' ">
+        and ohpf.id=#{personnelFilesBean.id,jdbcType=VARCHAR}
+      </if>
+      <!--姓名-->
+      <if test="personnelFilesBean.personnelFilesName != null and personnelFilesBean.personnelFilesName !=''">
+        and ohpf.personnel_files_name like concat("%",#{personnelFilesBean.personnelFilesName,jdbcType=VARCHAR} ,"%")
+      </if>
+      <!--性别-->
+      <if test="personnelFilesBean.personnelFilesGender != null and personnelFilesBean.personnelFilesGender !=''">
+        and ohpf.personnel_files_gender=#{personnelFilesBean.personnelFilesGender,jdbcType=VARCHAR}
+      </if>
+      <!--出生日期-->
+      <if test="personnelFilesBean.personnelFilesDateBirth != null and personnelFilesBean.personnelFilesDateBirth !=''">
+        and ohpf.personnel_files_date_birth=#{personnelFilesBean.personnelFilesDateBirth,jdbcType=VARCHAR}
+      </if>
+      <!--第一学历-->
+      <if test="personnelFilesBean.personnelFilesFirstDegree != null and personnelFilesBean.personnelFilesFirstDegree !=''">
+        and ohpf.personnel_files_first_degree=#{personnelFilesBean.personnelFilesFirstDegree,jdbcType=VARCHAR}
+      </if>
+      <!--第二学历-->
+      <if test="personnelFilesBean.personnelFilesSecondDegree != null and personnelFilesBean.personnelFilesSecondDegree !=''">
+        and ohpf.personnel_files_second_degree=#{personnelFilesBean.personnelFilesSecondDegree,jdbcType=VARCHAR}
+      </if>
+
+      <!--身份证-->
+      <if test="personnelFilesBean.personnelFilesIdCard != null and personnelFilesBean.personnelFilesIdCard !=''">
+        and ohpf.personnel_files_id_card=#{personnelFilesBean.personnelFilesIdCard,jdbcType=VARCHAR}
+      </if>
+      <!--所属科室-->
+      <if test="personnelFilesBean.personnelFilesDepartmentId != null and personnelFilesBean.personnelFilesDepartmentId !=''">
+        and ohpf.personnel_files_department_id=#{personnelFilesBean.personnelFilesDepartmentId,jdbcType=VARCHAR}
+      </if>
+    </where>
+    order by ohpf.create_time desc
+  </select>
+
+  <!--查询人事档案 -->
+  <select id="getPersonnelFilesEntityByList"  resultType="com.brad.web.webspringboot.oaSystem.bean.PersonnelFilesBean" parameterType="com.brad.web.webspringboot.oaSystem.bean.PersonnelFilesBean"   >
+    SELECT
+    ohpf.id AS id,
+    ohpf.personnel_files_name AS personnelFilesName,
+    ohpf.personnel_files_gender AS personnelFilesGender,
+    ohpf.personnel_files_date_birth AS personnelFilesDateBirth,
+    ohpf.personnel_files_nation AS personnelFilesNation,
+    ohpf.personnel_files_native_place AS personnelFilesNativePlace,
+    ohpf.personnel_files_photo_url AS personnelFilesPhotoUrl,
+    ohpf.personnel_files_id_card AS personnelFilesIdCard,
+    ohpf.personnel_files_political_situation AS personnelFilesPoliticalSituation,
+    ohpf.personnel_files_frist_working_hours AS personnelFilesFristWorkingHours,
+    ohpf.personnel_files_department_id AS personnelFilesDepartmentId,
+    ohpf.personnel_files_department_category AS personnelFilesDepartmentCategory,
+    ohpf.personnel_files_hospital_now_working_hours AS personnelFilesHospitalNowWorkingHours,
+    ohpf.personnel_files_professional_certificate_type AS personnelFilesProfessionalCertificateType,
+    ohpf.personnel_files_professional_certificate_number AS personnelFilesProfessionalCertificateNumber,
+    ohpf.personnel_files_professional_certificate_time as personnelFilesProfessionalCertificateTime,
+    ohpf.personnel_files_first_degree AS personnelFilesFirstDegree,
+    ohpf.personnel_files_first_degree_university AS personnelFilesFirstDegreeUniversity,
+    ohpf.personnel_files_first_degree_time AS personnelFilesFirstDegreeTime,
+    ohpf.personnel_files_second_degree AS personnelFilesSecondDegree,
+    ohpf.personnel_files_second_degree_university AS personnelFilesSecondDegreeUniversity,
+    ohpf.personnel_files_second_degree_time AS personnelFilesSecondDegreeTime,
+    ohpf.personnel_files_title AS personnelFilesTitle,
+    ohpf.personnel_files_title_time AS personnelFilesTitleTime,
+    ohpf.personnel_files_title_appointment_time AS personnelFilesTitleAppointmentTime,
+    ohpf.personnel_files_staff_category_id AS personnelFilesStaffCategoryId,
+    ohpf.create_time AS createTime,
+    ohpf.personnel_files_remarks AS personnelFilesRemarks,
+    hd.DEPT_NAME AS departmentName,
+    (
+    SELECT
+    sd. NAME
+    FROM
+    oa_hospital_sys_dictionary sd,
+    oa_hospital_sys_dictionary parent
+    WHERE
+    sd.parent_id = parent.id
+    AND parent.type = "sex_type"
+    AND sd.id = ohpf.personnel_files_gender
+    ) AS personnelFilesGenderName,
+    (
+    SELECT
+    sd. NAME
+    FROM
+    oa_hospital_sys_dictionary sd,
+    oa_hospital_sys_dictionary parent
+    WHERE
+    sd.parent_id = parent.id
+    AND parent.type = "degree_type"
+    AND sd.id = ohpf.personnel_files_first_degree
+    ) AS personnelFilesFirstDegreeName,
+    (
+    SELECT
+    sd. NAME
+    FROM
+    oa_hospital_sys_dictionary sd,
+    oa_hospital_sys_dictionary parent
+    WHERE
+    sd.parent_id = parent.id
+    AND parent.type = "degree_type"
+    AND sd.id = ohpf.personnel_files_second_degree
+    ) AS personnelFilesSecondDegreeName,
+    (
+    SELECT
+    sd. NAME
+    FROM
+    oa_hospital_sys_dictionary sd,
+    oa_hospital_sys_dictionary parent
+    WHERE
+    sd.parent_id = parent.id
+    AND parent.type = "staff_category_type"
+    AND sd.id = ohpf.personnel_files_staff_category_id
+    ) AS personnelFilesStaffCategoryName
+    FROM
+    oa_hospital_personnel_files ohpf
+    LEFT JOIN t_dept hd ON ohpf.personnel_files_department_id = hd.DEPT_ID
+
+    <where>
+      <if test="personnelFilesBean.id != null and personnelFilesBean.id !='' ">
+        and ohpf.id=#{personnelFilesBean.id,jdbcType=VARCHAR}
+      </if>
+      <!--姓名-->
+      <if test="personnelFilesBean.personnelFilesName != null and personnelFilesBean.personnelFilesName !=''">
+        and ohpf.personnel_files_name like concat("%",#{personnelFilesBean.personnelFilesName,jdbcType=VARCHAR} ,"%")
+      </if>
+      <!--性别-->
+      <if test="personnelFilesBean.personnelFilesGender != null and personnelFilesBean.personnelFilesGender !=''">
+        and ohpf.personnel_files_gender=#{personnelFilesBean.personnelFilesGender,jdbcType=VARCHAR}
+      </if>
+      <!--出生日期-->
+      <if test="personnelFilesBean.personnelFilesDateBirth != null and personnelFilesBean.personnelFilesDateBirth !=''">
+        and ohpf.personnel_files_date_birth=#{personnelFilesBean.personnelFilesDateBirth,jdbcType=VARCHAR}
+      </if>
+      <!--第一学历-->
+      <if test="personnelFilesBean.personnelFilesFirstDegree != null and personnelFilesBean.personnelFilesFirstDegree !=''">
+        and ohpf.personnel_files_first_degree=#{personnelFilesBean.personnelFilesFirstDegree,jdbcType=VARCHAR}
+      </if>
+      <!--第二学历-->
+      <if test="personnelFilesBean.personnelFilesSecondDegree != null and personnelFilesBean.personnelFilesSecondDegree !=''">
+        and ohpf.personnel_files_second_degree=#{personnelFilesBean.personnelFilesSecondDegree,jdbcType=VARCHAR}
+      </if>
+
+      <!--身份证-->
+      <if test="personnelFilesBean.personnelFilesIdCard != null and personnelFilesBean.personnelFilesIdCard !=''">
+        and ohpf.personnel_files_id_card=#{personnelFilesBean.personnelFilesIdCard,jdbcType=VARCHAR}
+      </if>
+      <!--所属科室-->
+      <if test="personnelFilesBean.personnelFilesDepartmentId != null and personnelFilesBean.personnelFilesDepartmentId !=''">
+        and ohpf.personnel_files_department_id=#{personnelFilesBean.personnelFilesDepartmentId,jdbcType=VARCHAR}
+      </if>
+    </where>
+    order by ohpf.create_time desc
+  </select>
+
+
+  <!--  总数（分页）-->
+  <select id="countPersonnelFilesDetail" parameterType="com.brad.web.webspringboot.oaSystem.bean.PersonnelFilesBean" resultType="long">
+    SELECT
+    count(ohpf.id)
+    FROM
+    oa_hospital_personnel_files ohpf
+    <where>
+      <if test="personnelFilesBean.id != null and personnelFilesBean.id !='' ">
+        and ohpf.id=#{personnelFilesBean.id,jdbcType=VARCHAR}
+      </if>
+      <!--姓名-->
+      <if test="personnelFilesBean.personnelFilesName != null and personnelFilesBean.personnelFilesName !=''">
+        and ohpf.personnel_files_name like concat("%",#{personnelFilesBean.personnelFilesName,jdbcType=VARCHAR} ,"%")
+      </if>
+      <!--性别-->
+      <if test="personnelFilesBean.personnelFilesGender != null and personnelFilesBean.personnelFilesGender !=''">
+        and ohpf.personnel_files_gender=#{personnelFilesBean.personnelFilesGender,jdbcType=VARCHAR}
+      </if>
+      <!--出生日期-->
+      <if test="personnelFilesBean.personnelFilesDateBirth != null and personnelFilesBean.personnelFilesDateBirth !=''">
+        and ohpf.personnel_files_date_birth=#{personnelFilesBean.personnelFilesDateBirth,jdbcType=VARCHAR}
+      </if>
+      <!--第一学历-->
+      <if test="personnelFilesBean.personnelFilesFirstDegree != null and personnelFilesBean.personnelFilesFirstDegree !=''">
+        and ohpf.personnel_files_first_degree=#{personnelFilesBean.personnelFilesFirstDegree,jdbcType=VARCHAR}
+      </if>
+      <!--第二学历-->
+      <if test="personnelFilesBean.personnelFilesSecondDegree != null and personnelFilesBean.personnelFilesSecondDegree !=''">
+        and ohpf.personnel_files_second_degree=#{personnelFilesBean.personnelFilesSecondDegree,jdbcType=VARCHAR}
+      </if>
+
+      <!--身份证-->
+      <if test="personnelFilesBean.personnelFilesIdCard != null and personnelFilesBean.personnelFilesIdCard !=''">
+        and ohpf.personnel_files_id_card=#{personnelFilesBean.personnelFilesIdCard,jdbcType=VARCHAR}
+      </if>
+      <!--所属科室-->
+      <if test="personnelFilesBean.personnelFilesDepartmentId != null and personnelFilesBean.personnelFilesDepartmentId !=''">
+        and ohpf.personnel_files_department_id=#{personnelFilesBean.personnelFilesDepartmentId,jdbcType=VARCHAR}
+      </if>
+    </where>
+    order by ohpf.create_time desc
+  </select>
+
+<!--  <delete id="deletePersonnelFilesEntity" parameterType="java.lang.String" >-->
+<!--    delete from oa_hospital_personnel_files-->
+<!--    where id = #{id,jdbcType=VARCHAR}-->
+<!--  </delete>-->
+
+<!--  <insert id="createPersonnelFilesEntity" parameterType="com.xueguang.oa.hospital.oapersonnelservices.entity.PersonnelFilesEntity" >-->
+<!--    insert into oa_hospital_personnel_files (id, personnel_files_name, personnel_files_gender, -->
+<!--      personnel_files_date_birth, personnel_files_nation, -->
+<!--      personnel_files_native_place, personnel_files_photo_url, -->
+<!--      personnel_files_id_card, personnel_files_political_situation, -->
+<!--      personnel_files_frist_working_hours, personnel_files_department_id, -->
+<!--      personnel_files_department_category, personnel_files_hospital_now_working_hours, -->
+<!--      personnel_files_professional_certificate_type, personnel_files_professional_certificate_number, -->
+<!--      personnel_files_professional_certificate_time, personnel_files_first_degree, -->
+<!--      personnel_files_first_degree_university, personnel_files_first_degree_time, -->
+<!--      personnel_files_second_degree, personnel_files_second_degree_university, -->
+<!--      personnel_files_second_degree_time, personnel_files_title, -->
+<!--      personnel_files_title_time, personnel_files_title_appointment_time, -->
+<!--      personnel_files_staff_category_id, create_time, -->
+<!--      personnel_files_remarks)-->
+<!--    values (#{id,jdbcType=VARCHAR}, #{personnelFilesName,jdbcType=VARCHAR}, #{personnelFilesGender,jdbcType=VARCHAR}, -->
+<!--      #{personnelFilesDateBirth,jdbcType=VARCHAR}, #{personnelFilesNation,jdbcType=VARCHAR}, -->
+<!--      #{personnelFilesNativePlace,jdbcType=VARCHAR}, #{personnelFilesPhotoUrl,jdbcType=VARCHAR}, -->
+<!--      #{personnelFilesIdCard,jdbcType=VARCHAR}, #{personnelFilesPoliticalSituation,jdbcType=VARCHAR}, -->
+<!--      #{personnelFilesFristWorkingHours,jdbcType=VARCHAR}, #{personnelFilesDepartmentId,jdbcType=VARCHAR}, -->
+<!--      #{personnelFilesDepartmentCategory,jdbcType=VARCHAR}, #{personnelFilesHospitalNowWorkingHours,jdbcType=VARCHAR}, -->
+<!--      #{personnelFilesProfessionalCertificateType,jdbcType=VARCHAR}, #{personnelFilesProfessionalCertificateNumber,jdbcType=VARCHAR}, -->
+<!--      #{personnelFilesProfessionalCertificateTime,jdbcType=VARCHAR}, #{personnelFilesFirstDegree,jdbcType=VARCHAR}, -->
+<!--      #{personnelFilesFirstDegreeUniversity,jdbcType=VARCHAR}, #{personnelFilesFirstDegreeTime,jdbcType=VARCHAR}, -->
+<!--      #{personnelFilesSecondDegree,jdbcType=VARCHAR}, #{personnelFilesSecondDegreeUniversity,jdbcType=VARCHAR}, -->
+<!--      #{personnelFilesSecondDegreeTime,jdbcType=VARCHAR}, #{personnelFilesTitle,jdbcType=VARCHAR}, -->
+<!--      #{personnelFilesTitleTime,jdbcType=VARCHAR}, #{personnelFilesTitleAppointmentTime,jdbcType=VARCHAR}, -->
+<!--      #{personnelFilesStaffCategoryId,jdbcType=VARCHAR}, now(),-->
+<!--      #{personnelFilesRemarks,jdbcType=LONGVARCHAR})-->
+<!--  </insert>-->
+
+
+
+<!--  <insert id="importPersonnelFiles" parameterType="list" >-->
+<!--    insert into oa_hospital_personnel_files (id, personnel_files_name, personnel_files_gender,-->
+<!--    personnel_files_date_birth, personnel_files_nation,-->
+<!--    personnel_files_native_place, personnel_files_photo_url,-->
+<!--    personnel_files_id_card, personnel_files_political_situation,-->
+<!--    personnel_files_frist_working_hours, personnel_files_department_id,-->
+<!--    personnel_files_department_category, personnel_files_hospital_now_working_hours,-->
+<!--    personnel_files_professional_certificate_type, personnel_files_professional_certificate_number,-->
+<!--    personnel_files_professional_certificate_time, personnel_files_first_degree,-->
+<!--    personnel_files_first_degree_university, personnel_files_first_degree_time,-->
+<!--    personnel_files_second_degree, personnel_files_second_degree_university,-->
+<!--    personnel_files_second_degree_time, personnel_files_title,-->
+<!--    personnel_files_title_time, personnel_files_title_appointment_time,-->
+<!--    personnel_files_staff_category_id, create_time,-->
+<!--    personnel_files_remarks)-->
+<!--    values-->
+<!--    <foreach collection="list" item="item" index="index" separator=",">-->
+<!--      (-->
+<!--      #{item.id,jdbcType=VARCHAR}, #{item.personnelFilesName,jdbcType=VARCHAR}, #{item.personnelFilesGender,jdbcType=VARCHAR},-->
+<!--      #{item.personnelFilesDateBirth,jdbcType=VARCHAR}, #{item.personnelFilesNation,jdbcType=VARCHAR},-->
+<!--      #{item.personnelFilesNativePlace,jdbcType=VARCHAR}, #{item.personnelFilesPhotoUrl,jdbcType=VARCHAR},-->
+<!--      #{item.personnelFilesIdCard,jdbcType=VARCHAR}, #{item.personnelFilesPoliticalSituation,jdbcType=VARCHAR},-->
+<!--      #{item.personnelFilesFristWorkingHours,jdbcType=VARCHAR}, #{item.personnelFilesDepartmentId,jdbcType=VARCHAR},-->
+<!--      #{item.personnelFilesDepartmentCategory,jdbcType=VARCHAR}, #{item.personnelFilesHospitalNowWorkingHours,jdbcType=VARCHAR},-->
+<!--      #{item.personnelFilesProfessionalCertificateType,jdbcType=VARCHAR}, #{item.personnelFilesProfessionalCertificateNumber,jdbcType=VARCHAR},-->
+<!--      #{item.personnelFilesProfessionalCertificateTime,jdbcType=VARCHAR}, #{item.personnelFilesFirstDegree,jdbcType=VARCHAR},-->
+<!--      #{item.personnelFilesFirstDegreeUniversity,jdbcType=VARCHAR}, #{item.personnelFilesFirstDegreeTime,jdbcType=VARCHAR},-->
+<!--      #{item.personnelFilesSecondDegree,jdbcType=VARCHAR}, #{item.personnelFilesSecondDegreeUniversity,jdbcType=VARCHAR},-->
+<!--      #{item.personnelFilesSecondDegreeTime,jdbcType=VARCHAR}, #{item.personnelFilesTitle,jdbcType=VARCHAR},-->
+<!--      #{item.personnelFilesTitleTime,jdbcType=VARCHAR}, #{item.personnelFilesTitleAppointmentTime,jdbcType=VARCHAR},-->
+<!--      #{item.personnelFilesStaffCategoryId,jdbcType=VARCHAR}, now(),-->
+<!--      #{item.personnelFilesRemarks,jdbcType=LONGVARCHAR}-->
+<!--      )-->
+<!--    </foreach>-->
+
+<!--  </insert>-->
+
+
+<!--  <update id="updatePersonnelFilesEntity" parameterType="com.xueguang.oa.hospital.oapersonnelservices.entity.PersonnelFilesEntity" >-->
+<!--    update oa_hospital_personnel_files-->
+<!--    <set >-->
+<!--      <if test="personnelFilesName != null" >-->
+<!--        personnel_files_name = #{personnelFilesName,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesGender != null" >-->
+<!--        personnel_files_gender = #{personnelFilesGender,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesDateBirth != null" >-->
+<!--        personnel_files_date_birth = #{personnelFilesDateBirth,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesNation != null" >-->
+<!--        personnel_files_nation = #{personnelFilesNation,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesNativePlace != null" >-->
+<!--        personnel_files_native_place = #{personnelFilesNativePlace,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesPhotoUrl != null" >-->
+<!--        personnel_files_photo_url = #{personnelFilesPhotoUrl,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesIdCard != null" >-->
+<!--        personnel_files_id_card = #{personnelFilesIdCard,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesPoliticalSituation != null" >-->
+<!--        personnel_files_political_situation = #{personnelFilesPoliticalSituation,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesFristWorkingHours != null" >-->
+<!--        personnel_files_frist_working_hours = #{personnelFilesFristWorkingHours,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesDepartmentId != null" >-->
+<!--        personnel_files_department_id = #{personnelFilesDepartmentId,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesDepartmentCategory != null" >-->
+<!--        personnel_files_department_category = #{personnelFilesDepartmentCategory,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesHospitalNowWorkingHours != null" >-->
+<!--        personnel_files_hospital_now_working_hours = #{personnelFilesHospitalNowWorkingHours,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesProfessionalCertificateType != null" >-->
+<!--        personnel_files_professional_certificate_type = #{personnelFilesProfessionalCertificateType,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesProfessionalCertificateNumber != null" >-->
+<!--        personnel_files_professional_certificate_number = #{personnelFilesProfessionalCertificateNumber,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesProfessionalCertificateTime != null" >-->
+<!--        personnel_files_professional_certificate_time = #{personnelFilesProfessionalCertificateTime,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesFirstDegree != null" >-->
+<!--        personnel_files_first_degree = #{personnelFilesFirstDegree,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesFirstDegreeUniversity != null" >-->
+<!--        personnel_files_first_degree_university = #{personnelFilesFirstDegreeUniversity,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesFirstDegreeTime != null" >-->
+<!--        personnel_files_first_degree_time = #{personnelFilesFirstDegreeTime,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesSecondDegree != null" >-->
+<!--        personnel_files_second_degree = #{personnelFilesSecondDegree,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesSecondDegreeUniversity != null" >-->
+<!--        personnel_files_second_degree_university = #{personnelFilesSecondDegreeUniversity,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesSecondDegreeTime != null" >-->
+<!--        personnel_files_second_degree_time = #{personnelFilesSecondDegreeTime,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesTitle != null" >-->
+<!--        personnel_files_title = #{personnelFilesTitle,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesTitleTime != null" >-->
+<!--        personnel_files_title_time = #{personnelFilesTitleTime,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesTitleAppointmentTime != null" >-->
+<!--        personnel_files_title_appointment_time = #{personnelFilesTitleAppointmentTime,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesStaffCategoryId != null" >-->
+<!--        personnel_files_staff_category_id = #{personnelFilesStaffCategoryId,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="createTime != null" >-->
+<!--        create_time = #{createTime,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="personnelFilesRemarks != null" >-->
+<!--        personnel_files_remarks = #{personnelFilesRemarks,jdbcType=LONGVARCHAR},-->
+<!--      </if>-->
+<!--    </set>-->
+<!--    where id = #{id,jdbcType=VARCHAR}-->
+<!--  </update>-->
+
+
+
+</mapper>

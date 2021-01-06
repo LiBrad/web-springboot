@@ -1,0 +1,272 @@
+<!DOCTYPE HTML>
+<html  xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta name="renderer" content="webkit">
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+        <meta name="generator" content="jsdaima.com" data-variable="/,cn,10001,,10001,res023"/>
+        <title>医院OA门户</title>
+        <meta name="keywords" content="OA门户" />
+        <meta name="description" content="OA门户" /> 
+<!--        <meta name="author" content="js代码" />
+        <meta name="copyright" content="js代码" /> -->
+        <meta http-equiv="pragma" content="no-cache" />
+
+        <meta http-equiv="Cache-Control" content="no-cache" />
+
+        <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT" />
+        <link rel="stylesheet" th:href="${@mvcResourceUrlProvider.getForLookupPath('/css/style.css')}" media="all">
+
+    </head>
+    
+    <body>
+        <!--[if lte IE 8]>
+            <div class="text-center padding-top-50 padding-bottom-50 bg-blue-grey-100">
+                <p class="browserupgrade font-size-18">
+                    你正在使用一个
+                    <strong>
+                        过时
+                    </strong>
+                    的浏览器。请
+                    <a href="#" target="_blank">
+                        升级您的浏览器
+                    </a>
+                    ，以提高您的体验。
+                </p>
+            </div>
+        <![endif]-->
+        <nav class="navbar navbar-default met-nav" role="navigation" style="background:url()no-repeat;background-size: cover;background-position:center;background-color:#ffffff;">
+            <div class="navbar-header">
+                <div class="container dropup">
+                    <button type="button" class="navbar-toggle hamburger hamburger-close collapsed"
+                    data-target="#navbar-default-collapse" data-toggle="collapse">
+                        <span class="sr-only">
+                            Toggle navigation
+                        </span>
+                        <span class="hamburger-bar">
+                        </span>
+                    </button>
+                    <a href="#" class="navbar-brand navbar-logo vertical-align" title="医院OA门户">
+                        <h1 class='hide'>
+                            医院OA门户
+                        </h1>
+                        <div class="vertical-align-middle">
+                           <!-- <img src="picture/logo.png" alt="医院OA门户" title="医院OA门户"
+                            /> -->
+        					<span style="font-family: 微软雅黑; font-size: xx-large; font-weight: 700; color: rgb(255, 0, 0);">医院OA门户</span>
+                        </div>
+                    </a>
+                 <!--   <div class="met-langlist  margin-top-10 text-center top-site navbar-right">
+                        <div class="inline-block dropup">
+                            <ul class="lang-list clearfix">
+                                <li>
+                                    <div class="met-search-body">
+                                        <form name="formsearch" class="page-search-form" action="/plus/search.php">
+                                            <input type="hidden" name="kwtype" value="0" />
+                                            <div class="input-search">
+                                                <button class="search-btn" type="submit">
+                                                    <i class="fa fa-search">
+                                                    </i>
+                                                </button>
+                                                <input type="text" class="form-control" name="q" value="" placeholder="搜索"
+                                                data-fv-notempty="true" data-fv-message="不能为空">
+                                            </div>
+                                        </form>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div> -->
+                    <h2 class='hide'>
+                    </h2>
+                </div>
+            </div>
+            <div class="collapse navbar-collapse navbar-collapse-toolbar" id="navbar-default-collapse">
+                <div class="container">
+                    <ul class="nav navbar-nav navlist">
+                        <a href="#" class="navbar-brand navbar-logo vertical-align" title="医院OA门户">
+                            <h1 class='hide'>
+                                "skin/
+                            </h1>
+                            <div class="vertical-align-middle">
+                                <img src="picture/logo.png" alt="医院OA门户" title="医院OA门户"
+                                />
+                            </div>
+                        </a>
+                        <li>
+                            <a th:href="@{'indexOA'}"  title="门户首页" class="link active">
+                                门户首页
+                            </a>
+                        </li>
+                        <li class="margin-left-0">
+                            <a class="dropdown-toggle link "
+                               th:href="@{'newslist'}"    title="院内新闻">
+                                院内新闻
+                            </a>
+                        </li>
+                        <li class="margin-left-0">
+                            <a class="dropdown-toggle link active"
+                               th:href="@{'noticelist'}"   title="通知公告">
+                                通知公告
+                            </a>
+                        </li>
+                        <li class="margin-left-0">
+                            <a class="dropdown-toggle link "
+                               th:href="@{'onlineLearninglist'}"   title="在线学习中心">
+                                在线学习中心
+                            </a>
+                        </li>
+                        <li class="margin-left-0">
+                            <a class="dropdown-toggle link " 
+                            href="fagui.html"  title="电话查询">
+                                电话查询
+                            </a>
+                        </li>
+                        <li class="margin-left-0">
+                            <a class="dropdown-toggle link "
+                            href="dongtai.html" title="医保政策查询">
+                                医保政策查询
+                            </a>
+                        </li>
+                        <li class="margin-left-0">
+                            <a th:href="@{'videolist'}" title="视频列表" class="link ">
+                                视频列表
+                            </a>
+                        </li>
+                        <li class="margin-left-0">
+                            <a href="zhaoshang.html" title="值班表" class="link ">
+                                值班表
+                            </a>
+                        </li>
+                        <li class="nav-langlist">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+<!--        <section class="derived-banner">
+            <div class="container">
+                <div class="met-banner   banner-ny-h" data-height='' style=''>
+                    <div class="slick-slide">
+                        <img class="cover-image" src="picture/1506744384.jpg" sizes="(max-width: 767px) 767px">
+                    </div>
+                </div>
+            </div>
+        </section> -->
+		
+        <section class="met-news animsition ">
+            <div class="container">
+                <div class="col-md-9 met-news-body">
+                    <div class="row">
+                        <div class="met-news-list">
+                            <ul class="met-page-ajax" data-scale='' id="list-context">
+
+                            </ul>
+                            <div class="hidden-xs">
+                                <div class="hidden-xs">
+                                    <div class='met_pager'>
+
+                                        <a href="#" style="visibility:hidden" >&larr;
+                                            上一页</a>
+
+                                        <li th:if="${dataTable.curPage} gt 1" ><a
+                                                th:href="@{'noticelist?pageNum='+${dataTable.curPage - 1 } }">&larr;
+                                            上一页</a></li>
+
+
+                                        <li th:if="${dataTable.curPage}  lt ${dataTable.totalPages} " ><a
+                                                th:href="@{'noticelist?pageNum='+${dataTable.curPage + 1 } }">下一页
+                                            &rarr;</a></li>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- -->
+                        </div>
+                    </div>
+                </div>
+				
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="met-news-bar">
+                            <form name="formsearch" class="page-search-form" action="noticelist">
+                                <!--                                <input type="hidden" name="kwtype" value="0" />-->
+                                <div class="form-group">
+                                    <div class="input-search">
+                                        <button type="submit" class="input-search-btn">
+                                            <i class="icon wb-search" aria-hidden="true">
+                                            </i>
+                                        </button>
+                                        <input type="text" class="form-control"  name="noticeTitle" autocomplete="off" placeholder="搜索">
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+							
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+		
+        <div class="met-footnav text-center">
+            <div class="container">
+                <div class="row mob-masonry">
+                    <div class="col-md-8 col-xs-12 footnav-left clearfix">
+                        <div class="col-md-2 col-sm-2 col-xs-6 list masonry-item">
+                            <h4>
+                                <a   th:href="@{'login'}"   title="后台登录">
+                                    后台登录
+                                </a>
+                            </h4>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-6 list masonry-item">
+                            <h4>
+                                <a href="#"   title="党务公开">
+                                    使用手册
+                                </a>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      <footer>
+          <div class="container text-center">
+              <p>
+                  Copyright &copy;2020 
+              </p>
+              <p>
+                  
+              </p>
+          </div>
+      </footer>
+
+        <script th:src="${@mvcResourceUrlProvider.getForLookupPath('/js/js.js')}"></script>
+
+    </body>
+    <script data-th-inline="javascript">
+
+        dataTable = [[${dataTable}]];
+        console.log(dataTable)
+
+        for (var i = 0;i < dataTable.rows.length  ; i++) {
+
+            var ele = document.createElement('li');
+            ele.innerHTML = '<h4> <a href="noticeshow?id='+dataTable.rows[i].id+'"  title="'+dataTable.rows[i].noticeTitle+'" > '+dataTable.rows[i].noticeTitle+' </a> </h4>'+
+                '<p class="info"> <span> '+dataTable.rows[i].noticeReleaseTime+' </span>'+
+                ' <span> <i class="icon wb-eye margin-right-5" aria-hidden="true"> </i>'+dataTable.rows[i].noticeNumberVisits+' </span>'+
+                '</p>';
+
+
+            document.getElementById("list-context").appendChild(ele)
+
+
+
+        }
+
+
+    </script>
+</html>

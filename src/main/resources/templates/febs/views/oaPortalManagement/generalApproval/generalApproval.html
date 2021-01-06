@@ -1,0 +1,271 @@
+<style>
+    /*#febs-generalApproval xm-select {*/
+    /*    min-height: 30px;*/
+    /*    line-height: 30px;*/
+    /*}*/
+    /*#febs-generalApproval xm-select > .xm-label .scroll .label-content {*/
+    /*    display: flex;*/
+    /*    padding: 0 30px 0 10px;*/
+    /*}*/
+</style>
+<div class="layui-fluid layui-anim febs-anim" id="febs-generalApproval" lay-title="通用审批管理">
+    <div class="layui-row febs-container">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body febs-table-full">
+                    <form class="layui-form layui-table-form" lay-filter="user-table-form">
+                        <div class="layui-row">
+                            <div class="layui-col-md10">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">标题:</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="applicationTitle" autocomplete="off" placeholder="请输入标题"  class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">审批结果</label>
+                                        <div class="layui-input-inline">
+                                            <select name="approvalResults" lay-search>
+                                                <option value=""></option>
+                                                <option value="2">待审批</option>
+                                                <option value="1">同意</option>
+                                                <option value="0">不同意</option>
+
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="layui-col-md2 layui-col-sm12 layui-col-xs12 table-action-area">
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-blue-plain table-action" id="query">
+                                    <i class="layui-icon">&#xe848;</i>
+                                </div>
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-green-plain table-action" id="reset">
+                                    <i class="layui-icon">&#xe79b;</i>
+                                </div>
+                                <div class="layui-btn layui-btn-sm layui-btn-primary table-action action-more"
+                                     shiro:hasAnyPermissions="generalApproval:add,generalApproval:update">
+                                    <i class="layui-icon">&#xe875;</i>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <table lay-filter="generalApprovalTable" lay-data="{id: 'generalApprovalTable'}"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<script type="text/html" id="user-status">-->
+<!--    {{#-->
+<!--    let status = {-->
+<!--    1: {title: '有效', color: 'green'},-->
+<!--    0: {title: '禁用', color: 'volcano'}-->
+<!--    }[d.status];-->
+<!--    }}-->
+<!--    <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>-->
+<!--</script>-->
+<!--<script type="text/html" id="user-sex">-->
+<!--    {{#-->
+<!--    let sex = {-->
+<!--    2: {title: '保密'},-->
+<!--    1: {title: '女'},-->
+<!--    0: {title: '男'}-->
+<!--    }[d.sex];-->
+<!--    }}-->
+<!--    <span>{{ sex.title }}</span>-->
+<!--</script>-->
+<script type="text/html" id="generalApproval-option">
+    <span shiro:lacksPermission="generalApprovalSee:see">
+        <span class="layui-badge-dot febs-bg-orange"></span> 无权限
+    </span>
+    <a lay-event="see" shiro:hasPermission="generalApprovalSee:see"><i
+            class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>
+
+    <!--    <a lay-event="edit" shiro:hasPermission="generalApproval:update"><i-->
+<!--            class="layui-icon febs-edit-area febs-blue">&#xe918;</i></a>-->
+<!--    <a lay-event="del" shiro:hasPermission="generalApproval:delete"><i class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>-->
+</script>
+<script data-th-inline="none" type="text/javascript">
+    layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs'], function () {
+        let $ = layui.jquery,
+            laydate = layui.laydate,
+            febs = layui.febs,
+            form = layui.form,
+            table = layui.table,
+            dropdown = layui.dropdown,
+            $view = $('#febs-generalApproval'),
+            $query = $view.find('#query'),
+            $reset = $view.find('#reset'),
+            $searchForm = $view.find('form'),
+            sortObject = {field: 'createTime', type: null},
+            tableIns;
+
+        form.render();
+
+        initTable();
+
+        laydate.render({
+            elem: '#user-createTime',
+            range: true,
+            trigger: 'click'
+        });
+
+        dropdown.render({
+            elem: $view.find('.action-more'),
+            click: function (name, elem, event) {
+                let checkStatus = table.checkStatus('generalApprovalTable');
+                if (name === 'add') {
+                    febs.modal.open('通用审批申请', 'oaPortalManagement/generalApproval/add', {
+                        btn: ['提交', '取消'],
+                        area: $(window).width() <= 750 ? '95%' : '50%',
+                        yes: function (index, layero) {
+                            $('#generalApproval-add').find('#submit').trigger('click');
+                        },
+                        btn2: function () {
+                            layer.closeAll();
+                        }
+                    });
+                }
+                // if (name === 'delete') {
+                //     if (!checkStatus.data.length) {
+                //         febs.alert.warn('请选择需要删除的通用审批');
+                //     } else {
+                //         febs.modal.confirm('删除通用审批', '确定删除通用审批？', function () {
+                //             let idS = [];
+                //             layui.each(checkStatus.data, function (key, item) {
+                //                 idS.push(item.id)
+                //             });
+                //             deleteUsers(idS.join(','));
+                //         });
+                //     }
+                // }
+                // if (name === 'export') {
+                //     let params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+                //     params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
+                //     params.pageNum = $view.find(".layui-laypage-em").next().html();
+                //     // febs.download(ctx + 'user/excel', params, '用户信息表.xlsx');
+                // }
+            },
+            options: [{
+                name: 'add',
+                title: '新增通用审批',
+                perms: 'generalApproval:add'
+            }]
+        });
+
+
+        table.on('tool(generalApprovalTable)', function (obj) {
+            let data = obj.data,
+                layEvent = obj.event;
+            // if (layEvent === 'edit') {
+            //     febs.modal.open('回复邮件', 'oaPortalManagement/generalApproval/update/' + data.id, {
+            //         area: $(window).width() <= 750 ? '100%' : '50%',
+            //         btn: ['发送', '取消'],
+            //         yes: function (index, layero) {
+            //             $('#generalApproval-update').find('#submit').trigger('click');
+            //         },
+            //         btn2: function () {
+            //             layer.closeAll();
+            //         }
+            //     });
+            // }
+            // if (layEvent === 'detail') {
+            //     febs.modal.view('查看审批结果', 'oaPortalManagement/generalApproval/see/' + data.id, {
+            //         area: $(window).width() <= 750 ? '95%' : ['1100px', '750px']
+            //     });
+            //     // tableIns.reload({where: getQueryParams(true), page: {curr: 1}});
+            //
+            // }
+            if (layEvent === 'see') {
+                febs.modal.open('查看审批结果', 'oaPortalManagement/generalApproval/see/' + data.id, {
+                    area: $(window).width() <= 750 ? '100%' : ['1100px', '750px'],
+                    btn: ['打印', '取消'],
+                    yes: function (index, layero) {
+                        $('#generalApprovalSee-see').find('#submit').trigger('click');
+                    },
+                    btn2: function () {
+                        layer.closeAll();
+                    }
+                });
+            }
+        });
+
+        table.on('sort(generalApprovalTable)', function (obj) {
+            sortObject = obj;
+            tableIns.reload({
+                initSort: obj,
+                where: $.extend(getQueryParams(), {
+                    field: obj.field,
+                    order: obj.type
+                })
+            });
+        });
+
+        $query.on('click', function () {
+            let params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+            tableIns.reload({where: params, page: {curr: 1}});
+        });
+
+        $reset.on('click', function () {
+            $searchForm[0].reset();
+            // sortObject.type = 'null';
+            // deptXmlSelect.setValue(['']);
+            // createTimeTo = null;
+            // createTimeFrom = null;
+            tableIns.reload({where: getQueryParams(true), page: {curr: 1}});
+        });
+
+
+
+
+        function setapprovalResults(data) {
+            var stateFlg = data.approvalResults
+            if (stateFlg == '1') {
+                return "<p style=' color:blue;'>同意</p>"
+            } else if (stateFlg == '0') {
+                // return "<p style='color:red;' onclick='clickError()'>异常</p>"
+                return "<p style=' color:red;'>不同意</p>"
+            }
+            else if (stateFlg == '2') {
+                // return "<p style='color:red;' onclick='clickError()'>异常</p>"
+                return "<p style=' color:green;'>待审批</p>"
+            }
+        }
+
+        function initTable() {
+            tableIns = febs.table.init({
+                elem: $view.find('table'),
+                id: 'generalApprovalTable',
+                url: ctx + 'generalApproval/list?applicantUserId='+currentUser.userId,
+                cols: [[
+                    {
+                        type: 'numbers',
+                        width: '4%'
+                    },
+                    {type: 'checkbox'},
+                    {field: 'approvedByUserUserName', title: '审批人', minWidth: 100},
+                    {field: 'applicantUserName', title: '申请人'},
+                    {field: 'applicationTitle', title: '标题'},
+                    {field: 'createTime', title: '申请时间'},
+                    {title: '审批状态', templet: setapprovalResults},
+                    {title: '操作', toolbar: '#generalApproval-option', minWidth: 140}
+                ]]
+            });
+        }
+
+        function getQueryParams(flag) {
+            let params = $searchForm.serializeJson();
+            return params;
+        }
+
+        // function deleteUsers(ids) {
+        //     febs.get(ctx + 'generalApproval/delete/' + ids, null, function () {
+        //         febs.alert.success('删除邮件成功！');
+        //         $query.click();
+        //     });
+        // }
+    })
+</script>

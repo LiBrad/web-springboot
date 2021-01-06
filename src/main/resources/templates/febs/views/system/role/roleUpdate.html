@@ -1,0 +1,115 @@
+<style>
+    #role-update {
+        padding: 20px 25px 25px 0;
+    }
+</style>
+<div class="layui-fluid" id="role-update">
+    <form class="layui-form" action="" lay-filter="role-update-form">
+        <div class="layui-form-item febs-hide">
+            <label class="layui-form-label febs-form-item-require">角色ID：</label>
+            <div class="layui-input-block">
+                <input type="text" name="roleId" data-th-value="${role.roleId}" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require">角色名称：</label>
+            <div class="layui-input-block">
+                <input type="text" name="roleName" autocomplete="off" placeholder="请输入角色名称"   class="layui-input" minlength="2"
+                       maxlength="10" lay-verify="range">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色描述：</label>
+            <div class="layui-input-block">
+                <textarea name="remark" maxlength="50" placeholder="请输入角色名称"   class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色权限：</label>
+            <div class="layui-input-block menu-tree" style="margin-top: .8rem;"></div>
+        </div>
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="role-update-form-submit" id="submit"></button>
+        </div>
+    </form>
+</div>
+
+<script data-th-inline="javascript">
+    layui.use(['febs', 'form', 'validate'], function () {
+        let $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            form = layui.form,
+            eleTree = layui.eleTree,
+            role = [[${role}]],
+            validate = layui.validate,
+            menuTree;
+
+        form.verify(validate);
+        form.render();
+
+         menuTree = eleTree.render({
+            elem: '.menu-tree',
+            url: ctx + 'menu/tree',
+            showCheckbox: true,
+            where: {
+                "invalidate_ie_cache": new Date()
+            },
+            accordion: true,
+             defaultCheckedKeys:(role.menuIds != null? role.menuIds.split(',')  :[]),  //设置回显的多选框里面的值
+             checkStrictly: true,
+            renderAfterExpand: false,
+        request: {
+                name: "title",
+                key: "id",
+                children: "childs",
+                checked: "checked",
+                data: "data"
+            },
+            response: {
+                statusName: "code",
+                statusCode: 200,
+                dataName: "data"
+            }
+        });
+
+        initRoleValue();
+
+
+
+
+
+        function initRoleValue() {
+
+
+            form.val("role-update-form", {
+                "roleId": role.roleId,
+                "roleName": role.roleName,
+                "remark": role.remark
+            });
+
+
+        }
+
+        form.on('submit(role-update-form-submit)', function (data) {
+
+            let selected = menuTree.getChecked(false, true);
+            let menuIds = [];
+            layui.each(selected, function (key, item) {
+                menuIds.push(item.id)
+            });
+            data.field.menuIds = menuIds.join(',');
+
+            // if (febs.nativeEqual(data.field, role)) {
+            //     febs.alert.warn('数据未作任何修改！');
+            //     return false;
+            // }
+            febs.post(ctx + 'role/update', data.field, function () {
+                layer.closeAll();
+                febs.alert.success('角色数据修改成功');
+                $('#febs-role').find('#query').click();
+            });
+            return false;
+        });
+    });
+</script>

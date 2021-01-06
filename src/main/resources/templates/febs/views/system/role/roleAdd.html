@@ -1,0 +1,201 @@
+<style>
+    #role-add {
+        padding: 20px 25px 25px 0;
+    }
+</style>
+<div class="layui-fluid" id="role-add">
+
+    <form class="layui-form layui-table-form" action="" lay-filter="role-form">
+        <div class="layui-form-item febs-hide">
+            <label class="layui-form-label febs-form-item-require">角色ID：</label>
+            <div class="layui-input-block">
+                <input type="text" name="roleId" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label febs-form-item-require">角色名称：</label>
+            <div class="layui-input-block">
+                <input type="text" name="roleName" autocomplete="off" placeholder="请输入角色名称"   class="layui-input" minlength="2"
+                       maxlength="10" lay-verify="range">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色描述：</label>
+            <div class="layui-input-block">
+                <textarea name="remark" maxlength="50" placeholder="请输入角色名称"   class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色权限：</label>
+            <div class="layui-input-block menu-tree" style="margin-top: .8rem;"></div>
+        </div>
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="role-form-submit" id="submit"></button>
+<!--            <button type="reset" class="layui-btn" id="reset"></button>-->
+        </div>
+    </form>
+</div>
+
+<script>
+    layui.use(['febs', 'form', 'validate', 'xmSelect'], function () {
+        let $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            form = layui.form,
+            xmSelect = layui.xmSelect,
+            eleTree = layui.eleTree,
+            validate = layui.validate,
+            roleXmSelect,
+            deptXmlSelect;
+
+
+        form.verify(validate);
+        form.render();
+
+        let menuTree = eleTree.render({
+            elem: '.menu-tree',
+            url: ctx + 'menu/tree',
+            showCheckbox: true,
+            where: {
+                "invalidate_ie_cache": new Date()
+            },
+            accordion: true,
+            checkStrictly: true,
+            renderAfterExpand: false,
+            request: {
+                name: "title",
+                key: "id",
+                children: "childs",
+                checked: "checked",
+                data: "data"
+            },
+            response: {
+                statusName: "code",
+                statusCode: 200,
+                dataName: "data"
+            }
+        });
+
+        deptXmlSelect = xmSelect.render({
+            el: '#user-add-dept',
+            model: {label: {type: 'text'}},
+            tree: {
+                show: true,
+                strict: false,
+                showLine: false,
+                clickCheck: true,
+                expandedKeys: [-1],
+            },
+            name: 'deptId',
+            theme: {
+                color: '#52c41a',
+            },
+            prop: {
+                value: 'id'
+            },
+            height: 'auto',
+            on: function (data) {
+                if (data.isAdd) {
+                    return data.change.slice(0, 1)
+                }
+            }
+        });
+
+        // dataPermissionXmlSelect = xmSelect.render({
+        //     el: '#user-add-data-permission',
+        //     model: {label: {type: 'text'}},
+        //     tree: {
+        //         show: true,
+        //         strict: false,
+        //         showLine: false,
+        //         clickCheck: true,
+        //         expandedKeys: [-1],
+        //     },
+        //     name: 'deptIds',
+        //     theme: {
+        //         color: '#52c41a',
+        //     },
+        //     prop: {
+        //         value: 'id'
+        //     },
+        //     height: 'auto'
+        // });
+
+        febs.get(ctx + 'dept/select/tree', null, function (data) {
+            deptXmlSelect.update(data)
+            // dataPermissionXmlSelect.update(data)
+        });
+
+        roleXmSelect = xmSelect.render({
+            el: '#user-add-role',
+            toolbar: {show: true},
+            name: 'roleId',
+            theme: {
+                color: '#52c41a',
+            },
+            prop: {
+                name: 'roleName',
+                value: 'roleId'
+            },
+            data: []
+        });
+
+        febs.get(ctx + 'role', null, function (data) {
+            roleXmSelect.update({
+                data: data.data,
+                autoRow: true,
+            })
+        });
+
+        form.on('submit(role-form-submit)', function (data) {
+            let selected = menuTree.getChecked(false, true);
+            let menuIds = [];
+            layui.each(selected, function (key, item) {
+                menuIds.push(item.id)
+            });
+            data.field.menuIds = menuIds.join(',');
+            if (!menuIds.length) {
+                febs.modal.confirm('提示', '当前角色未授予任何权限，是否继续？', function () {
+                    addOrUpdateRole(data.field);
+                });
+            } else {
+                addOrUpdateRole(data.field);
+            }
+            return false;
+        });
+
+        let addOrUpdateRole = function (data) {
+            if (data.roleId && $header.text() === '修改角色') {
+                febs.post(ctx + 'role/update', data, function () {
+                    febs.alert.success('修改角色成功');
+                    $query.trigger('click');
+                    $('#febs-role').find('#query').click();
+
+                });
+            } else {
+
+                febs.post(ctx + 'role', data, function () {
+                    layer.closeAll();
+                    febs.alert.success('新增角色成功');
+                    // $query.trigger('click');
+                    $('#febs-role').find('#query').click();
+
+                });
+            }
+        }
+        // form.on('submit(role-form-submit)', function (data) {
+        //
+        //
+        //     // if (!data.field.roleId) {
+        //     //     febs.alert.warn('请选择用户角色');
+        //     //     return false;
+        //     // }
+        //     febs.post(ctx + 'role', data.field, function () {
+        //         layer.closeAll();
+        //         febs.alert.success('新增角色成功');
+        //         $('#role-add').find('#query').click();
+        //     });
+        //     return false;
+        // });
+    });
+</script>

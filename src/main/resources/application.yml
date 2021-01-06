@@ -1,0 +1,59 @@
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: utf-8
+  shutdown: graceful
+
+spring:
+  profiles:
+    active: dev
+  thymeleaf:
+    cache: false
+  #配置文件上传的文件大小限制
+  servlet:
+    multipart:
+      maxFileSize: 300MB
+      maxRequestSize: 500MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  aop:
+    proxy-target-class: true
+  config:
+    import: classpath:febs.yml
+  application:
+    name: brad-web
+    package-time: "@package-time@"
+
+  web:
+    resources:
+      chain:
+        strategy:
+          content:
+            enabled: true
+            paths: "/**"
+
+mybatis-plus:
+  type-aliases-package:  com.brad.web.webspringboot.*.entity
+  mapper-locations: classpath:mapper/*/*.xml
+  configuration:
+    jdbc-type-for-null: null
+  global-config:
+    banner: false
+    db-config:
+      select-strategy: not_empty
+
+logging:
+  level:
+    com:
+      baomidou:
+        mybatisplus:
+          core:
+            metadata:
+              TableInfoHelper: error
+
+#配置文件
+oa:
+  nginx:
+    nginxUploadPath: e:/nginx-oaSystem/upload
+    nginxUploadUrl: http://192.168.0.102/upload

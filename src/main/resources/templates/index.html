@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="utf-8">
+    <title>医院OA网站系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" th:href="${@mvcResourceUrlProvider.getForLookupPath('/layui/css/layui.css')}" media="all">
+    <link rel="stylesheet" th:href="${@mvcResourceUrlProvider.getForLookupPath('/febs/css/febs.css')}" media="all">
+    <link rel="stylesheet" th:href="${@mvcResourceUrlProvider.getForLookupPath('/febs/css/eleTree.css')}" media="all">
+    <link rel="stylesheet" th:href="${@mvcResourceUrlProvider.getForLookupPath('/febs/css/apexcharts.min.css')}" media="all">
+
+
+
+    <link rel="icon" th:href="${@mvcResourceUrlProvider.getForLookupPath('/febs/images/favicon.ico')}" type="image/x-icon"/>
+</head>
+<body>
+<div id="febs"></div>
+
+<script th:src="${@mvcResourceUrlProvider.getForLookupPath('/layui/layui.js')}"></script>
+
+<script th:src="${@mvcResourceUrlProvider.getForLookupPath('/mods/1wangEditor.min.js')}"></script>
+
+
+
+<style>
+    /* 设置富文本高度 */
+    .w-e-text-container{
+        height: 400px !important;/*!important是重点，因为原div是行内样式设置的高度300px*/
+    }
+    /* 富文本WANGEDITOR层级太高覆盖问题 */
+    .w-e-menu {
+             z-index: 2 !important;
+    }
+    .w-e-text-container {
+        z-index: 1 !important;
+    }
+    /**旧版的富文本编辑器，手机自适应*/
+    .w-e-toolbar{
+        flex-wrap:wrap;
+    }
+</style>
+<script th:inline="javascript">
+    let ctx = [[@{/}]];
+    let currentUser = [[${user}]];
+    currentUser.roleSet = [[${roles}]];
+    currentUser.permissionSet = [[${permissions}]];
+//防止页面后退
+        history.pushState(null, null, document.URL);
+        window.addEventListener('popstate', function () {
+            history.pushState(null, null, document.URL);
+        });
+
+    layui.config({
+        base: './febs/',
+        debug: true
+    }).extend({
+        xmSelect: 'lay/extends/xm-select',
+        apexcharts: 'lay/extends/apexcharts.min',
+        eleTree: 'lay/extends/eleTree'
+    }).use(['index']);
+</script>
+</body>
+</html>

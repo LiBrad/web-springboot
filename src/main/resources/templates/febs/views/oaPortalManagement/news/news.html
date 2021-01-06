@@ -1,0 +1,294 @@
+<style>
+    /*#febs-news xm-select {*/
+    /*    min-height: 30px;*/
+    /*    line-height: 30px;*/
+    /*}*/
+    /*#febs-news xm-select > .xm-label .scroll .label-content {*/
+    /*    display: flex;*/
+    /*    padding: 0 30px 0 10px;*/
+    /*}*/
+</style>
+<div class="layui-fluid layui-anim febs-anim" id="febs-news" lay-title="院内新闻管理">
+    <div class="layui-row febs-container">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body febs-table-full">
+                    <form class="layui-form layui-table-form" lay-filter="user-table-form">
+                        <div class="layui-row">
+                            <div class="layui-col-md10">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">内容标题:</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="newsContentTitle" autocomplete="off" placeholder="请输入内容标题"  class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">显示状态</label>
+                                        <div class="layui-input-inline">
+                                            <select name="newsDisplayStatus" lay-search>
+                                                <option value=""></option>
+                                                <option value="1">显示门户</option>
+                                                <option value="0">不显示门户</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="layui-col-md2 layui-col-sm12 layui-col-xs12 table-action-area">
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-blue-plain table-action" id="query">
+                                    <i class="layui-icon">&#xe848;</i>
+                                </div>
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-green-plain table-action" id="reset">
+                                    <i class="layui-icon">&#xe79b;</i>
+                                </div>
+                                <div class="layui-btn layui-btn-sm layui-btn-primary table-action action-more"
+                                     shiro:hasAnyPermissions="news:add,news:update">
+                                    <i class="layui-icon">&#xe875;</i>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <table lay-filter="newsTable" lay-data="{id: 'newsTable'}"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<script type="text/html" id="user-status">-->
+<!--    {{#-->
+<!--    let status = {-->
+<!--    1: {title: '有效', color: 'green'},-->
+<!--    0: {title: '禁用', color: 'volcano'}-->
+<!--    }[d.status];-->
+<!--    }}-->
+<!--    <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>-->
+<!--</script>-->
+<!--<script type="text/html" id="user-sex">-->
+<!--    {{#-->
+<!--    let sex = {-->
+<!--    2: {title: '保密'},-->
+<!--    1: {title: '女'},-->
+<!--    0: {title: '男'}-->
+<!--    }[d.sex];-->
+<!--    }}-->
+<!--    <span>{{ sex.title }}</span>-->
+<!--</script>-->
+<script type="text/html" id="news-option">
+    <span shiro:lacksPermission="news:update,news:delete">
+        <span class="layui-badge-dot febs-bg-orange"></span> 无权限
+    </span>
+<!--    <a lay-event="detail" shiro:hasPermission="user:view"><i-->
+<!--            class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>-->
+    <a lay-event="edit" shiro:hasPermission="news:update"><i
+            class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>
+    <a lay-event="del" shiro:hasPermission="news:delete"><i class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>
+</script>
+<script data-th-inline="none" type="text/javascript">
+    layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs'], function () {
+        let $ = layui.jquery,
+            laydate = layui.laydate,
+            febs = layui.febs,
+            form = layui.form,
+            table = layui.table,
+            dropdown = layui.dropdown,
+            $view = $('#febs-news'),
+            $query = $view.find('#query'),
+            $reset = $view.find('#reset'),
+            $searchForm = $view.find('form'),
+            sortObject = {field: 'createTime', type: null},
+            tableIns;
+
+        form.render();
+
+        initTable();
+
+        laydate.render({
+            elem: '#user-createTime',
+            range: true,
+            trigger: 'click'
+        });
+
+        dropdown.render({
+            elem: $view.find('.action-more'),
+            click: function (name, elem, event) {
+                let checkStatus = table.checkStatus('newsTable');
+                if (name === 'add') {
+                    febs.modal.open('新增院内新闻', 'oaPortalManagement/news/add', {
+                        btn: ['提交', '取消'],
+                        area: $(window).width() <= 750 ? '95%' : '50%',
+                        yes: function (index, layero) {
+                            $('#news-add').find('#submit').trigger('click');
+                        },
+                        btn2: function () {
+                            layer.closeAll();
+                        }
+                    });
+                }
+                if (name === 'delete') {
+                    if (!checkStatus.data.length) {
+                        febs.alert.warn('请选择需要删除的院内新闻');
+                    } else {
+                        febs.modal.confirm('删除院内新闻', '确定删除院内新闻？', function () {
+                            let idS = [];
+                            layui.each(checkStatus.data, function (key, item) {
+                                idS.push(item.id)
+                            });
+                            deleteUsers(idS.join(','));
+                        });
+                    }
+                }
+                // if (name === 'export') {
+                //     let params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+                //     params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
+                //     params.pageNum = $view.find(".layui-laypage-em").next().html();
+                //     // febs.download(ctx + 'user/excel', params, '用户信息表.xlsx');
+                // }
+            },
+            options: [{
+                name: 'add',
+                title: '新增院内新闻',
+                perms: 'news:add'
+            }, {
+                name: 'delete',
+                title: '删除院内新闻',
+                perms: 'news:delete'
+            }]
+        });
+
+
+        table.on('tool(newsTable)', function (obj) {
+            let data = obj.data,
+                layEvent = obj.event;
+            if (layEvent === 'del') {
+                febs.modal.confirm('删除院内新闻', '确定删除该院内新闻？', function () {
+                    deleteUsers(data.id);
+                });
+            }
+            if (layEvent === 'edit') {
+                febs.modal.open('修改用户', 'oaPortalManagement/news/update/' + data.id, {
+                    area: $(window).width() <= 750 ? '100%' : '50%',
+                    btn: ['提交', '取消'],
+                    yes: function (index, layero) {
+                        $('#news-update').find('#submit').trigger('click');
+                    },
+                    btn2: function () {
+                        layer.closeAll();
+                    }
+                });
+            }
+        });
+
+        table.on('sort(newsTable)', function (obj) {
+            sortObject = obj;
+            tableIns.reload({
+                initSort: obj,
+                where: $.extend(getQueryParams(), {
+                    field: obj.field,
+                    order: obj.type
+                })
+            });
+        });
+
+        $query.on('click', function () {
+            let params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+            tableIns.reload({where: params, page: {curr: 1}});
+        });
+
+        $reset.on('click', function () {
+            $searchForm[0].reset();
+            // sortObject.type = 'null';
+            // deptXmlSelect.setValue(['']);
+            // createTimeTo = null;
+            // createTimeFrom = null;
+            tableIns.reload({where: getQueryParams(true), page: {curr: 1}});
+        });
+
+
+        function setNewsDisplayStatus(data) {
+            var stateFlg = data.newsDisplayStatus
+            if (stateFlg == '0') {
+                return "<p style='color:red;'>不显示门户</p>"
+            } else if (stateFlg == '1') {
+                // return "<p style='color:red;' onclick='clickError()'>异常</p>"
+                return "<p style='color:blue;'>显示门户</p>"
+
+            }
+
+        }
+
+
+        function setNewsCategory(data) {
+            var stateFlg = data.newsCategory
+            if (stateFlg == '1') {
+                return "<p> 院内新闻</p>"
+            } else if (stateFlg == '2') {
+                return "<p >实时新闻</p>"
+            } else if (stateFlg == '3') {
+                return "<p >科室新闻</p>"
+
+            }
+
+        }
+
+        function setNewsRecommendedImageType(data) {
+            var stateFlg = data.newsRecommendedImageType
+            if (stateFlg == '0') {
+                return "<p style='color:blue;'>无</p>"
+            } else if (stateFlg == '1') {
+                // return "<p style='color:red;' onclick='clickError()'>异常</p>"
+                return "<p style='color:red;'>图片新闻</p>"
+
+            }
+
+        }
+
+        function setNewsRecommendedType(data) {
+            var stateFlg = data.newsRecommendedType
+            if (stateFlg == '0') {
+                return "<p style=' color:blue;'>无</p>"
+            } else if (stateFlg == '1') {
+                // return "<p style='color:red;' onclick='clickError()'>异常</p>"
+                return "<p style=' color:red;'>置顶</p>"
+
+            }
+
+        }
+
+        function initTable() {
+            tableIns = febs.table.init({
+                elem: $view.find('table'),
+                id: 'newsTable',
+                url: ctx + 'news/list',
+                cols: [[
+                    {
+                        type: 'numbers',
+                        width: '4%'
+                    },
+                    {type: 'checkbox'},
+                    {field: 'newsContentTitle', title: '内容标题', minWidth: 100},
+                    {title: '所属类别', templet: setNewsCategory},
+                    {title: '显示状态', templet: setNewsDisplayStatus},
+                    {title: '图片新闻', templet: setNewsRecommendedImageType},
+                    {title: '是否置顶', templet: setNewsRecommendedType},
+                    {field: 'newsReleaseTime', title: '发布时间'},
+                    {field: 'newsNumberVisits', title: '浏览次数'},
+                    {title: '操作', toolbar: '#news-option', minWidth: 140}
+                ]]
+            });
+        }
+
+        function getQueryParams(flag) {
+            let params = $searchForm.serializeJson();
+            return params;
+        }
+
+        function deleteUsers(ids) {
+            febs.get(ctx + 'news/delete/' + ids, null, function () {
+                febs.alert.success('删除院内新闻成功！');
+                $query.click();
+            });
+        }
+    })
+</script>

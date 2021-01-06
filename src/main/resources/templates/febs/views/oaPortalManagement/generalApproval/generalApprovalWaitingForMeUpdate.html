@@ -1,0 +1,182 @@
+<style>
+    #user-update {
+        padding: 20px 25px 25px 0;
+    }
+</style>
+<div class="layui-fluid" id="generalApprovalWaitingForMe-update">
+    <form class="layui-form" action="" lay-filter="generalApproval-update-form">
+
+        <div class="layui-form-item " >
+            <label class="layui-form-label  febs-form-item-require">审批结果</label>
+            <div class="layui-input-block">
+                <select name="approvalResults" lay-verify="required"  lay-search>
+                    <option value=""></option>
+                    <option value="1">同意</option>
+                    <option value="0">不同意</option>
+
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item" >
+            <label class="layui-form-label">签字</label>
+            <div class="layui-input-block">
+                <canvas id="signName" width="255" height="200">
+                    您的浏览器当前不支持canvas画布，请更换别的浏览器进行签名操作
+                </canvas>
+<!--                <button id="clearCanvas">重写</button>-->
+
+            </div>
+        </div>
+
+
+        <div class="layui-form-item" >
+            <label class="layui-form-label">审批意见</label>
+            <div class="layui-input-block">
+                <textarea name="approvalComments" maxlength="100" placeholder="请输入审批意见"  class="layui-textarea"></textarea>
+            </div>
+        </div>
+
+
+
+        <div class="layui-form-item febs-hide">
+            <button class="layui-btn" lay-submit="" lay-filter="generalApproval-update-form-submit" id="submit"></button>
+        </div>
+    </form>
+</div>
+<link rel="stylesheet" th:href="${@mvcResourceUrlProvider.getForLookupPath('/mods/indexCanvasSignature.css')}" media="all">
+<script th:src="${@mvcResourceUrlProvider.getForLookupPath('/mods/jquery-1.7.2.js')}"></script>
+<script th:src="${@mvcResourceUrlProvider.getForLookupPath('/mods/canvasSignature.js')}"></script>
+
+<script data-th-inline="javascript">
+
+</script>
+
+
+<script data-th-inline="javascript">
+    layui.use(['febs', 'form','laydate','upload'], function () {
+        let $ = layui.$,
+            febs = layui.febs,
+            layer = layui.layer,
+            form = layui.form,
+            generalApprovalBean = [[${generalApprovalBean}]],
+            validate = layui.validate,
+            laydate = layui.laydate,
+
+            upload = layui.upload,
+            dataPermissionXmlSelect,
+            roleXmSelect,
+            deptXmlSelect;
+
+        form.verify(validate);
+        form.render();
+
+        // var $sigdiv = $("#signature").jSignature();
+
+    // //防止页面后退
+    //     history.pushState(null, null, document.URL);
+    //     window.addEventListener('popstate', function () {
+    //         history.pushState(null, null, document.URL);
+    //     });
+
+        //初始化签名样式（这里仅支持一个签名，如需多个签名框需改写组件）
+        $('#signName').canvasSignature({
+            fillStyle:'transparent',	//生成图片背景色，默认为透明
+            lineWidth:2	//笔画粗细（尺寸），默认为四像素粗细
+        });
+
+        // //清除重写
+        // $('#clearCanvas').on('click',function(){
+        //     //清除重写调用方式
+        //     $('#signName').clearSignature();
+        //     return;
+        // });
+
+
+
+
+
+
+
+
+
+
+        //上传附件
+        var insideEnclosure;
+        var url = ''
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#insideEnclosureUpload', //绑定元素
+            url:  ctx + 'upload/uploadEnclosure' , //上传接口
+            accept:"file",
+            choose: function(obj) {
+                obj.preview(function(index, file, result) {
+                    $("#insideEnclosureName").html(file.name);
+                });
+            },
+            done: function(res) {
+                //上传完毕回调
+                console.log(res)
+                if (res.errcode == "200") {
+                    layer.msg("附件上传成功");
+                    insideEnclosure = res.dataSource.list[0].enclosureUrl;
+
+                } else {
+                    alert("附件上传失败！")
+                    if (code == "10005") {
+                        window.top.location.href = 'login.html';
+                    }
+                }
+            },
+            error: function(res) {
+                //请求异常回调
+            }
+        });
+
+
+
+        initUserValue();
+
+        function initUserValue() {
+
+
+            form.val("generalApproval-update-form", {
+                "generalApprovalTheme": "回复："+generalApprovalBean.generalApprovalTheme
+
+            });
+            // generalApprovalRecommendedType,
+            if(generalApprovalBean.generalApprovalRecommendedType == 1){
+                $('input[name="generalApprovalRecommendedType"]').attr("checked",true);
+            }
+            if(generalApprovalBean.generalApprovalRecommendedImageType == 1){
+                $('input[name="generalApprovalRecommendedImageType"]').attr("checked",true);
+
+            }
+
+            var html = "<br /><br /><br /><br /><br /><br /><p>---原始邮件---</p><p>发件人："+generalApprovalBean.insideMaiFromUserName+"</p><p>发送时间："+generalApprovalBean.createTime+"</p><p>收件人："+generalApprovalBean.insideMaiAddresseelUserName+"</p><p>标题："+generalApprovalBean.generalApprovalTheme+"</p> <hr> "+generalApprovalBean.generalApprovalContent
+
+            editor.txt.html(html); //回显富文本编辑器内容
+            form.render();
+
+
+        }
+
+        form.on('submit(generalApproval-update-form-submit)', function (data) {
+            data.field.sign = $('#signName').createSignature('png')
+            data.field.id = generalApprovalBean.id
+
+
+
+            febs.post(ctx + 'generalApproval/update', data.field, function () {
+                layer.closeAll();
+                febs.alert.success('审批成功！');
+                $('#febs-generalApprovalWaitingForMe').find('#query').click();
+            });
+
+            return false;
+        });
+
+
+
+    });
+</script>

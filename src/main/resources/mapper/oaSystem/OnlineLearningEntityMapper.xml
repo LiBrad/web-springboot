@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.brad.web.webspringboot.oaSystem.mapper.OnlineLearningEntityMapper" >
+
+  <!--查询在线学习中心-->
+  <select id="getOnlineLearningEntityList" resultType="com.brad.web.webspringboot.oaSystem.bean.OnlineLearningBean" parameterType="com.brad.web.webspringboot.oaSystem.bean.OnlineLearningBean"  >
+    SELECT
+      ohnl.id AS id,
+      ohnl.ol_title AS olTitle,
+      ohnl.technical_information_type_id AS technicalInformationTypeId,
+      ohnl.ol_release_time AS olReleaseTime,
+      ohnl.create_time AS createTime,
+      ohnl.ol_content AS olContent,
+      (
+      SELECT
+      sd. NAME
+      FROM
+      oa_hospital_sys_dictionary sd,
+      oa_hospital_sys_dictionary parent
+      WHERE
+      sd.parent_id = parent.id
+      AND parent.type = "technical_information_type"
+      AND sd.id = ohnl.technical_information_type_id
+      ) AS technicalInformationTypeName,
+      ohnl.ol_user_id AS olUserId,
+      ou.USERNAME AS olUserName,
+      ohnl.ol_number_visits AS olNumberVisits
+
+    FROM
+     oa_hospital_online_learning ohnl
+    LEFT JOIN t_user ou ON ohnl.ol_user_id = ou.USER_ID
+    <where>
+      <if test="onlineLearningBean.id != null and onlineLearningBean.id !='' ">
+        and ohnl.id=#{onlineLearningBean.id,jdbcType=VARCHAR}
+      </if>
+      <if test="onlineLearningBean.olTitle != null and onlineLearningBean.olTitle !=''">
+        and ohnl.ol_title like concat("%",#{onlineLearningBean.olTitle,jdbcType=VARCHAR} ,"%")
+
+      </if>
+
+      <if test="onlineLearningBean.olReleaseTime != null and onlineLearningBean.olReleaseTime !=''">
+        and ohnl.ol_release_time=#{onlineLearningBean.olReleaseTime,jdbcType=VARCHAR}
+      </if>
+
+      <if test="onlineLearningBean.technicalInformationTypeId != null and onlineLearningBean.technicalInformationTypeId !=''">
+        and ohnl.technical_information_type_id=#{onlineLearningBean.technicalInformationTypeId,jdbcType=VARCHAR}
+      </if>
+      <if test="onlineLearningBean.olUserId != null and onlineLearningBean.olUserId !=''">
+        and ohnl.ol_user_id=#{onlineLearningBean.olUserId,jdbcType=VARCHAR}
+      </if>
+    </where>
+    order by ohnl.create_time desc
+  </select>
+
+  <!--查询在线学习中心  (列表，可根据id或其他条件查询详情)-->
+  <select id="getOnlineLearningEntityByList" resultType="com.brad.web.webspringboot.oaSystem.bean.OnlineLearningBean" parameterType="com.brad.web.webspringboot.oaSystem.bean.OnlineLearningBean"  >
+    SELECT
+    ohnl.id AS id,
+    ohnl.ol_title AS olTitle,
+    ohnl.technical_information_type_id AS technicalInformationTypeId,
+    ohnl.ol_release_time AS olReleaseTime,
+    ohnl.create_time AS createTime,
+    ohnl.ol_content AS olContent,
+    (
+    SELECT
+    sd. NAME
+    FROM
+    oa_hospital_sys_dictionary sd,
+    oa_hospital_sys_dictionary parent
+    WHERE
+    sd.parent_id = parent.id
+    AND parent.type = "technical_information_type"
+    AND sd.id = ohnl.technical_information_type_id
+    ) AS technicalInformationTypeName,
+    ohnl.ol_user_id AS olUserId,
+    ou.USERNAME AS olUserName,
+    ohnl.ol_number_visits AS olNumberVisits
+
+    FROM
+    oa_hospital_online_learning ohnl
+    LEFT JOIN t_user ou ON ohnl.ol_user_id = ou.USER_ID
+    <where>
+      <if test="onlineLearningBean.id != null and onlineLearningBean.id !='' ">
+        and ohnl.id=#{onlineLearningBean.id,jdbcType=VARCHAR}
+      </if>
+      <if test="onlineLearningBean.olTitle != null and onlineLearningBean.olTitle !=''">
+        and ohnl.ol_title like concat("%",#{onlineLearningBean.olTitle,jdbcType=VARCHAR} ,"%")
+
+      </if>
+
+      <if test="onlineLearningBean.olReleaseTime != null and onlineLearningBean.olReleaseTime !=''">
+        and ohnl.ol_release_time=#{onlineLearningBean.olReleaseTime,jdbcType=VARCHAR}
+      </if>
+
+      <if test="onlineLearningBean.technicalInformationTypeId != null and onlineLearningBean.technicalInformationTypeId !=''">
+        and ohnl.technical_information_type_id=#{onlineLearningBean.technicalInformationTypeId,jdbcType=VARCHAR}
+      </if>
+      <if test="onlineLearningBean.olUserId != null and onlineLearningBean.olUserId !=''">
+        and ohnl.ol_user_id=#{onlineLearningBean.olUserId,jdbcType=VARCHAR}
+      </if>
+    </where>
+    order by ohnl.create_time desc
+  </select>
+
+<!--  &lt;!&ndash;查询在线学习中心（AO门户信息公共区域）&ndash;&gt;-->
+<!--  <select id="getOnlineLearningOACommonEntityList" resultType="com.xueguang.oa.hospital.oaportalservices.bean.OnlineLearningBean"   parameterType="map"  >-->
+<!--    SELECT-->
+<!--    ohnl.id AS id,-->
+<!--    ohnl.ol_title AS olTitle,-->
+<!--    ohnl.technical_information_type_id AS technicalInformationTypeId,-->
+<!--    ohnl.ol_release_time AS olReleaseTime,-->
+<!--    ohnl.create_time AS createTime,-->
+<!--    ohnl.ol_content AS olContent,-->
+<!--    (-->
+<!--    SELECT-->
+<!--    sd. NAME-->
+<!--    FROM-->
+<!--    oa_hospital_sys_dictionary sd,-->
+<!--    oa_hospital_sys_dictionary parent-->
+<!--    WHERE-->
+<!--    sd.parent_id = parent.id-->
+<!--    AND parent.type = "technical_information_type"-->
+<!--    AND sd.id = ohnl.technical_information_type_id-->
+<!--    ) AS technicalInformationTypeName,-->
+<!--    ohnl.ol_user_id AS olUserId,-->
+<!--    ou.name AS olUserName,-->
+<!--    ohnl.ol_number_visits AS olNumberVisits-->
+
+<!--    FROM-->
+<!--    oa_hospital_online_learning ohnl-->
+<!--    LEFT JOIN oa_hospital_user ou ON ohnl.ol_user_id = ou.id-->
+<!--    <where>-->
+<!--      <if test="id != null and id !='' ">-->
+<!--        and ohnl.id=#{id,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="olTitle != null and olTitle !=''">-->
+<!--        and ohnl.ol_title like concat("%",#{olTitle,jdbcType=VARCHAR} ,"%")-->
+
+<!--      </if>-->
+
+<!--      <if test="olReleaseTime != null and olReleaseTime !=''">-->
+<!--        and ohnl.ol_release_time=#{olReleaseTime,jdbcType=VARCHAR}-->
+<!--      </if>-->
+
+<!--      <if test="technicalInformationTypeId != null and technicalInformationTypeId !=''">-->
+<!--        and ohnl.technical_information_type_id=#{technicalInformationTypeId,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--      <if test="olUserId != null and olUserId !=''">-->
+<!--        and ohnl.ol_user_id=#{olUserId,jdbcType=VARCHAR}-->
+<!--      </if>-->
+<!--    </where>-->
+<!--    order by ohnl.ol_release_time desc-->
+<!--  </select>-->
+
+
+  <!-- 查总数（分页）-->
+  <select id="countOnlineLearningEntityDetail"  parameterType="com.brad.web.webspringboot.oaSystem.bean.OnlineLearningBean" resultType="long">
+    SELECT
+    count(ohnl.id)
+    FROM
+    oa_hospital_online_learning ohnl
+    <where>
+      <if test="onlineLearningBean.id != null and onlineLearningBean.id !='' ">
+        and ohnl.id=#{onlineLearningBean.id,jdbcType=VARCHAR}
+      </if>
+      <if test="onlineLearningBean.olTitle != null and onlineLearningBean.olTitle !=''">
+        and ohnl.ol_title like concat("%",#{onlineLearningBean.olTitle,jdbcType=VARCHAR} ,"%")
+
+      </if>
+
+      <if test="onlineLearningBean.olReleaseTime != null and onlineLearningBean.olReleaseTime !=''">
+        and ohnl.ol_release_time=#{onlineLearningBean.olReleaseTime,jdbcType=VARCHAR}
+      </if>
+
+      <if test="onlineLearningBean.technicalInformationTypeId != null and onlineLearningBean.technicalInformationTypeId !=''">
+        and ohnl.technical_information_type_id=#{onlineLearningBean.technicalInformationTypeId,jdbcType=VARCHAR}
+      </if>
+      <if test="onlineLearningBean.olUserId != null and onlineLearningBean.olUserId !=''">
+        and ohnl.ol_user_id=#{onlineLearningBean.olUserId,jdbcType=VARCHAR}
+      </if>
+    </where>
+    order by ohnl.create_time desc
+  </select>
+
+
+
+</mapper>

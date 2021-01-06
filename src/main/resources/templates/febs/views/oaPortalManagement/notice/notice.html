@@ -1,0 +1,231 @@
+<style>
+    /*#febs-notice xm-select {*/
+    /*    min-height: 30px;*/
+    /*    line-height: 30px;*/
+    /*}*/
+    /*#febs-notice xm-select > .xm-label .scroll .label-content {*/
+    /*    display: flex;*/
+    /*    padding: 0 30px 0 10px;*/
+    /*}*/
+</style>
+<div class="layui-fluid layui-anim febs-anim" id="febs-notice" lay-title="通知公告管理">
+    <div class="layui-row febs-container">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body febs-table-full">
+                    <form class="layui-form layui-table-form" lay-filter="user-table-form">
+                        <div class="layui-row">
+                            <div class="layui-col-md10">
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label layui-form-label-sm">公告标题:</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" placeholder="请输入通知公告标题" id="noticeTitle" name="noticeTitle"autocomplete="off"   class="layui-input">
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            <div class="layui-col-md2 layui-col-sm12 layui-col-xs12 table-action-area">
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-blue-plain table-action" id="query">
+                                    <i class="layui-icon">&#xe848;</i>
+                                </div>
+                                <div class="layui-btn layui-btn-sm layui-btn-primary febs-button-green-plain table-action" id="reset">
+                                    <i class="layui-icon">&#xe79b;</i>
+                                </div>
+                                <div class="layui-btn layui-btn-sm layui-btn-primary table-action action-more"
+                                     shiro:hasAnyPermissions="notice:add,notice:update">
+                                    <i class="layui-icon">&#xe875;</i>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <table lay-filter="noticeTable" lay-data="{id: 'noticeTable'}"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<script type="text/html" id="user-status">-->
+<!--    {{#-->
+<!--    let status = {-->
+<!--    1: {title: '有效', color: 'green'},-->
+<!--    0: {title: '禁用', color: 'volcano'}-->
+<!--    }[d.status];-->
+<!--    }}-->
+<!--    <span class="layui-badge febs-bg-{{status.color}}">{{ status.title }}</span>-->
+<!--</script>-->
+<!--<script type="text/html" id="user-sex">-->
+<!--    {{#-->
+<!--    let sex = {-->
+<!--    2: {title: '保密'},-->
+<!--    1: {title: '女'},-->
+<!--    0: {title: '男'}-->
+<!--    }[d.sex];-->
+<!--    }}-->
+<!--    <span>{{ sex.title }}</span>-->
+<!--</script>-->
+<script type="text/html" id="notice-option">
+    <span shiro:lacksPermission="notice:update,notice:delete">
+        <span class="layui-badge-dot febs-bg-orange"></span> 无权限
+    </span>
+<!--    <a lay-event="detail" shiro:hasPermission="user:view"><i-->
+<!--            class="layui-icon febs-edit-area febs-green">&#xe7a5;</i></a>-->
+    <a lay-event="edit" shiro:hasPermission="notice:update"><i
+            class="layui-icon febs-edit-area febs-blue">&#xe7a4;</i></a>
+    <a lay-event="del" shiro:hasPermission="notice:delete"><i class="layui-icon febs-edit-area febs-red">&#xe7f9;</i></a>
+</script>
+<script data-th-inline="none" type="text/javascript">
+    layui.use(['dropdown', 'jquery', 'laydate', 'form', 'table', 'febs'], function () {
+        let $ = layui.jquery,
+            laydate = layui.laydate,
+            febs = layui.febs,
+            form = layui.form,
+            table = layui.table,
+            dropdown = layui.dropdown,
+            $view = $('#febs-notice'),
+            $query = $view.find('#query'),
+            $reset = $view.find('#reset'),
+            $searchForm = $view.find('form'),
+            sortObject = {field: 'createTime', type: null},
+            tableIns;
+
+        form.render();
+
+        initTable();
+
+        laydate.render({
+            elem: '#user-createTime',
+            range: true,
+            trigger: 'click'
+        });
+
+        dropdown.render({
+            elem: $view.find('.action-more'),
+            click: function (name, elem, event) {
+                let checkStatus = table.checkStatus('noticeTable');
+                if (name === 'add') {
+                    febs.modal.open('新增通知公告', 'oaPortalManagement/notice/add', {
+                        btn: ['提交', '取消'],
+                        area: $(window).width() <= 750 ? '95%' : '50%',
+                        yes: function (index, layero) {
+                            $('#notice-add').find('#submit').trigger('click');
+                        },
+                        btn2: function () {
+                            layer.closeAll();
+                        }
+                    });
+                }
+                if (name === 'delete') {
+                    if (!checkStatus.data.length) {
+                        febs.alert.warn('请选择需要删除的通知公告');
+                    } else {
+                        febs.modal.confirm('删除通知公告', '确定删除通知公告？', function () {
+                            let idS = [];
+                            layui.each(checkStatus.data, function (key, item) {
+                                idS.push(item.id)
+                            });
+                            deleteNotice(idS.join(','));
+                        });
+                    }
+                }
+                // if (name === 'export') {
+                //     let params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+                //     params.pageSize = $view.find(".layui-laypage-limits option:selected").val();
+                //     params.pageNum = $view.find(".layui-laypage-em").next().html();
+                //     // febs.download(ctx + 'user/excel', params, '用户信息表.xlsx');
+                // }
+            },
+            options: [{
+                name: 'add',
+                title: '新增通知公告',
+                perms: 'notice:add'
+            }, {
+                name: 'delete',
+                title: '删除通知公告',
+                perms: 'notice:delete'
+            }]
+        });
+
+
+        table.on('tool(noticeTable)', function (obj) {
+            let data = obj.data,
+                layEvent = obj.event;
+            if (layEvent === 'del') {
+                febs.modal.confirm('删除通知公告', '确定删除该通知公告？', function () {
+                    deleteNotice(data.id);
+                });
+            }
+            if (layEvent === 'edit') {
+                febs.modal.open('修改通知公告', 'oaPortalManagement/notice/update/' + data.id, {
+                    area: $(window).width() <= 750 ? '100%' : '50%',
+                    btn: ['提交', '取消'],
+                    yes: function (index, layero) {
+                        $('#notice-update').find('#submit').trigger('click');
+                    },
+                    btn2: function () {
+                        layer.closeAll();
+                    }
+                });
+            }
+        });
+
+        table.on('sort(noticeTable)', function (obj) {
+            sortObject = obj;
+            tableIns.reload({
+                initSort: obj,
+                where: $.extend(getQueryParams(), {
+                    field: obj.field,
+                    order: obj.type
+                })
+            });
+        });
+
+        $query.on('click', function () {
+            let params = $.extend(getQueryParams(), {field: sortObject.field, order: sortObject.type});
+            tableIns.reload({where: params, page: {curr: 1}});
+        });
+
+        $reset.on('click', function () {
+            $searchForm[0].reset();
+            // sortObject.type = 'null';
+            // deptXmlSelect.setValue(['']);
+            // createTimeTo = null;
+            // createTimeFrom = null;
+            tableIns.reload({where: getQueryParams(true), page: {curr: 1}});
+        });
+
+
+
+        function initTable() {
+            tableIns = febs.table.init({
+                elem: $view.find('table'),
+                id: 'noticeTable',
+                    url: ctx + 'notice/list',
+                cols: [[
+                    {
+                        type: 'numbers',
+                        width: '4%'
+                    },
+                    {type: 'checkbox'},
+                    {field: 'noticeTitle', title: '公告标题', minWidth: 100},
+                    {field: 'noticeReleaseTime', title: '发布时间'},
+                    {title: '操作', toolbar: '#notice-option', minWidth: 140}
+                ]]
+            });
+        }
+
+        function getQueryParams(flag) {
+            let params = $searchForm.serializeJson();
+            return params;
+        }
+
+        function deleteNotice(ids) {
+            febs.get(ctx + 'notice/delete/' + ids, null, function () {
+                febs.alert.success('删除通知公告成功！');
+                $query.click();
+            });
+        }
+    })
+</script>
