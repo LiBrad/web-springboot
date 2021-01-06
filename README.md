@@ -43,6 +43,23 @@
 5.Nginx
 
 
+后端技术：
+1.Spring boot
+
+2.mysql
+
+3.Redis
+
+4.shiro
+
+
+前端
+1.Bootstrap
+
+2.Layui
+
+
+
 
 
 
