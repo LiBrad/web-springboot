@@ -30,4 +30,20 @@
 
 
 
+项目开发环境：
+
+1.idea
+
+2.jdk1.8
+
+3.mysql
+
+4.redis
+
+5.Nginx
+
+
+
+
+
 同时删除了二次开发不需要的链接权限，有需要看的伙伴可以查看原版 FEBS-Shiro https://github.com/febsteam/FEBS-Shiro
